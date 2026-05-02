@@ -2,12 +2,11 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>Stok Obat — Ners Asri Cantik</title>
 <meta name="theme-color" content="#C0426E">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Stok Obat">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -166,25 +165,29 @@
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="login-screen" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;background:linear-gradient(135deg,#C0426E,#D9608E,#E890BB,#F4B3D2);align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
-  <div style="background:white;border-radius:22px;padding:32px 28px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(150,30,80,0.35);">
-    <div style="width:72px;height:72px;background:linear-gradient(135deg,#C0426E,#E890BB);border-radius:20px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(192,66,110,0.4)">
+<div id="login-screen" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;background:linear-gradient(135deg,#C0426E,#D9608E,#E890BB,#F4B3D2);align-items:center;justify-content:center;padding:20px;box-sizing:border-box">
+  <div style="background:#fff;border-radius:22px;padding:32px 28px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(150,30,80,.35)">
+    <div style="width:72px;height:72px;background:linear-gradient(135deg,#C0426E,#E890BB);border-radius:20px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center">
       <svg width="42" height="42" viewBox="0 0 56 56" fill="none">
-        <path d="M28 26C28 26 15 18 15 11.5C15 7.4 18.4 4 22.5 4C24.9 4 27 5.1 28 6.8C29 5.1 31.1 4 33.5 4C37.6 4 41 7.4 41 11.5C41 18 28 26 28 26Z" fill="white" opacity="0.95"/>
-        <rect x="8" y="32" width="40" height="16" rx="8" fill="white" opacity="0.92"/>
-        <path d="M8 40C8 35.6 11.6 32 16 32H28V48H16C11.6 48 8 44.4 8 40Z" fill="white" opacity="0.5"/>
-        <line x1="28" y1="32" x2="28" y2="48" stroke="rgba(200,80,130,0.4)" stroke-width="2"/>
+        <path d="M28 26S15 18 15 11.5C15 7.4 18.4 4 22.5 4c2.4 0 4.5 1.1 5.5 2.8C29 5.1 31.1 4 33.5 4 37.6 4 41 7.4 41 11.5 41 18 28 26 28 26z" fill="white" opacity=".95"/>
+        <rect x="8" y="32" width="40" height="16" rx="8" fill="white" opacity=".92"/>
+        <path d="M8 40c0-4.4 3.6-8 8-8h12v16H16c-4.4 0-8-3.6-8-8z" fill="white" opacity=".5"/>
+        <line x1="28" y1="32" x2="28" y2="48" stroke="rgba(200,80,130,.4)" stroke-width="2"/>
       </svg>
     </div>
     <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#2D1A24">Stok Obat</div>
     <div style="font-size:13px;color:#C07090;font-style:italic;margin:3px 0 22px;font-family:'DM Sans',sans-serif">Ners Asri Cantik ♥</div>
-    <input type="password" id="login-pass" placeholder="Masukkan password..." onkeydown="if(event.key==='Enter')cekLogin()"
-      style="width:100%;padding:13px;border:1.5px solid rgba(232,144,187,0.4);border-radius:10px;font-size:15px;font-family:'DM Sans',sans-serif;color:#2D1A24;outline:none;text-align:center;letter-spacing:2px;box-sizing:border-box;margin-bottom:10px">
+    <input type="password" id="login-pass" placeholder="Masukkan password..."
+      style="width:100%;padding:13px;border:1.5px solid rgba(232,144,187,.4);border-radius:10px;font-size:15px;font-family:'DM Sans',sans-serif;color:#2D1A24;outline:none;text-align:center;letter-spacing:2px;box-sizing:border-box;margin-bottom:10px">
     <div id="login-err" style="display:none;background:#FDECEC;color:#A32D2D;border-radius:8px;padding:8px;font-size:12px;margin-bottom:10px;font-family:'DM Sans',sans-serif">❌ Password salah. Coba lagi.</div>
-    <button onclick="cekLogin()" style="width:100%;padding:13px;background:linear-gradient(135deg,#C0426E,#E890BB);color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 14px rgba(192,66,110,0.35)">Masuk →</button>
+    <button id="login-btn" style="width:100%;padding:13px;background:linear-gradient(135deg,#C0426E,#E890BB);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Masuk →</button>
     <div style="margin-top:14px;font-size:11px;color:#C0A0B0;font-family:'DM Sans',sans-serif">Sistem Informasi Manajemen Obat</div>
   </div>
+</div>
+
+<div id="loading-screen" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:88888;background:linear-gradient(135deg,#C0426E,#E890BB);align-items:center;justify-content:center;flex-direction:column">
+  <div style="width:44px;height:44px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px"></div>
+  <div style="color:#fff;font-family:'DM Sans',sans-serif;font-size:14px">Memuat data dari cloud...</div>
 </div>
 
 
@@ -407,11 +410,7 @@
 
 <script>
 
-const SAKIT = ['Demam','Flu','Batuk','Diare','Hipertensi','Diabetes','ISPA','Pusing','Mual','Maag','Luka','Alergi'];
-const BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-const ALS = {expired:'Expired/Kadaluarsa',rusak:'Rusak/Cacat',hilang:'Hilang',lainnya:'Lainnya'};
-
-// ===================== FIREBASE =====================
+// ===== FIREBASE =====
 const firebaseConfig = {
   apiKey: "AIzaSyDtOehm-Cp12n1Y3K_GhJj40buerVp9c_w",
   authDomain: "stok-obat-asri-cantik.firebaseapp.com",
@@ -422,115 +421,59 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const COL = 'stok-obat-asri';
 
-// Save to Firestore
 async function sv(name, val){
-  try{
-    await db.collection(COL).doc('shared__'+name).set({
-      data: JSON.stringify(val),
-      updated: Date.now()
-    });
-  } catch(e){ console.error('sv error:', e); showAl('al-masuk','Gagal simpan ke cloud. Cek koneksi internet.','e'); }
+  try{ await db.collection('sa').doc('shared__'+name).set({d:JSON.stringify(val),t:Date.now()}); }
+  catch(e){ console.error('sv:',e.message); }
 }
-
-// Load from Firestore
 async function ld(name){
   try{
-    const doc = await db.collection(COL).doc('shared__'+name).get();
-    if(doc.exists) return JSON.parse(doc.data().data);
-  } catch(e){ console.error('ld error:', e); }
+    const doc = await db.collection('sa').doc('shared__'+name).get();
+    if(doc.exists) return JSON.parse(doc.data().d);
+  }catch(e){ console.error('ld:',e.message); }
   return [];
 }
 
-// ===================== DATA =====================
+// ===== STATE =====
 let batches=[], keluarData=[], buangData=[], hcData=[];
-let selKeluar={};
-let curPage='masuk';
+let selKeluar={}, curPage='masuk', importParsed=null;
 
-// ===================== LOGIN =====================
-const PASS = btoa('SenyumSayang');
+const SAKIT=['Demam','Flu','Batuk','Diare','Hipertensi','Diabetes','ISPA','Pusing','Mual','Maag','Luka','Alergi'];
+const BULAN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const ALS={expired:'Expired/Kadaluarsa',rusak:'Rusak/Cacat',hilang:'Hilang',lainnya:'Lainnya'};
 
-function tampilLogin(){
-  document.getElementById('login-screen').style.display='flex';
-}
+// ===== HELPERS =====
+function genId(){ return Math.random().toString(36).slice(2,10)+Math.random().toString(36).slice(2,6); }
+function toUpper(s){ return s?s.toUpperCase():s; }
+function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function daysExp(s){ if(!s)return 9999; const n=new Date(); n.setHours(0,0,0,0); return Math.floor((new Date(s)-n)/86400000); }
+function fmtTgl(s){ if(!s||s==='-')return '-'; const[y,m,d]=s.split('-'); return d+'/'+m+'/'+y; }
+function stokByName(n){ return batches.filter(b=>b.namaObat===n&&b.sisaStok>0).reduce((a,b)=>a+b.sisaStok,0); }
+function allNama(){ return [...new Set(batches.map(b=>b.namaObat))].sort(); }
+function namaFile(){ const d=new Date(); return 'STOK_OBAT_NERS_ASRI_CANTIKBGT_'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.xlsx'; }
+function xlsxOut(rows,sheet,file){ const ws=XLSX.utils.aoa_to_sheet(rows); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,sheet); XLSX.writeFile(wb,file); }
+function showAl(id,msg,type){ const el=document.getElementById(id); if(!el)return; el.className='alert alert-'+type+' show'; el.textContent=msg; setTimeout(()=>el.classList.remove('show'),4500); }
+function migrasi(){ batches.forEach(b=>{b.namaObat=toUpper(b.namaObat);}); keluarData.forEach(r=>{r.nama=toUpper(r.nama);r.sakit=toUpper(r.sakit);}); buangData.forEach(d=>{d.namaObat=toUpper(d.namaObat);}); hcData.forEach(r=>{r.nama=toUpper(r.nama);r.sakit=toUpper(r.sakit);if(r.tindakan)r.tindakan=toUpper(r.tindakan);}); }
+function mergeData(a,b){ const m={}; (b||[]).forEach(x=>{if(x.id)m[x.id]=x;}); (a||[]).forEach(x=>{if(x.id)m[x.id]=x;}); return Object.values(m); }
 
-function cekLogin(){
+// ===== LOGIN =====
+async function cekLogin(){
   const val = document.getElementById('login-pass').value;
   const err = document.getElementById('login-err');
-  if(btoa(val) === PASS){
-    err.style.display='none';
-    document.getElementById('login-screen').style.display='none';
-    mulaiApp();
-  } else {
-    err.style.display='block';
-    document.getElementById('login-pass').value='';
-    document.getElementById('login-pass').focus();
-  }
-}
-
-async function mulaiApp(){
-  // Show loading
-  showLoading(true);
-  // Load ALL data from Firebase
-  [batches, keluarData, buangData, hcData] = await Promise.all([
-    ld('batches'), ld('keluar'), ld('buang'), ld('homecare')
-  ]);
-  migrasiUppercase();
-  // Setup UI
-  const d=new Date();
-  const days=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  if(btoa(val) !== btoa('SenyumSayang')){ err.style.display='block'; document.getElementById('login-pass').value=''; document.getElementById('login-pass').focus(); return; }
+  err.style.display='none';
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('loading-screen').style.display='flex';
+  [batches,keluarData,buangData,hcData] = await Promise.all([ld('batches'),ld('keluar'),ld('buang'),ld('homecare')]);
+  migrasi();
+  document.getElementById('loading-screen').style.display='none';
+  const d=new Date(), days=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
   document.getElementById('hdate').textContent=days[d.getDay()]+', '+d.getDate()+' '+BULAN[d.getMonth()]+' '+d.getFullYear();
   document.getElementById('mtgl').value=today();
   document.getElementById('hc-tgl').value=today();
-  showLoading(false);
   go('masuk');
 }
 
-function showLoading(show){
-  let el = document.getElementById('loading-overlay');
-  if(!el){
-    el = document.createElement('div');
-    el.id='loading-overlay';
-    el.innerHTML='<div style="text-align:center"><div style="width:40px;height:40px;border:3px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px"></div><div style="color:white;font-family:DM Sans,sans-serif;font-size:14px">Memuat data...</div></div>';
-    el.style.cssText='position:fixed;inset:0;z-index:88888;background:linear-gradient(135deg,#C0426E,#E890BB);display:flex;align-items:center;justify-content:center';
-    document.body.appendChild(el);
-  }
-  el.style.display = show ? 'flex' : 'none';
-}
-
-// ===================== HELPERS =====================
-function genId(){ return Math.random().toString(36).slice(2,10)+Math.random().toString(36).slice(2,6); }
-function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-function daysExp(s){ if(!s) return 9999; const n=new Date(); n.setHours(0,0,0,0); return Math.floor((new Date(s)-n)/86400000); }
-function fmtTgl(s){ if(!s||s==='-') return '-'; const[y,m,d]=s.split('-'); return d+'/'+m+'/'+y; }
-function stokByName(n){ return batches.filter(b=>b.namaObat===n&&b.sisaStok>0).reduce((a,b)=>a+b.sisaStok,0); }
-function allNama(){ return [...new Set(batches.map(b=>b.namaObat))].sort(); }
-function toUpper(s){ return s?s.toUpperCase():s; }
-function migrasiUppercase(){
-  let changed=false;
-  batches.forEach(b=>{ const u=toUpper(b.namaObat); if(b.namaObat!==u){b.namaObat=u;changed=true;} });
-  keluarData.forEach(r=>{ const n=toUpper(r.nama),s=toUpper(r.sakit); if(r.nama!==n||r.sakit!==s){r.nama=n;r.sakit=s;changed=true;} });
-  buangData.forEach(d=>{ const n=toUpper(d.namaObat); if(d.namaObat!==n){d.namaObat=n;changed=true;} });
-  hcData.forEach(r=>{ const n=toUpper(r.nama),s=toUpper(r.sakit),t=toUpper(r.tindakan||''); if(r.nama!==n||r.sakit!==s||r.tindakan!==t){r.nama=n;r.sakit=s;if(r.tindakan)r.tindakan=t;changed=true;} });
-}
-function showAl(id,msg,type){
-  const el=document.getElementById(id);
-  if(!el)return;
-  el.className='alert alert-'+type+' show';
-  el.textContent=msg;
-  setTimeout(()=>el.classList.remove('show'),4500);
-}
-function namaFile(prefix){
-  const d=new Date();
-  return 'STOK_OBAT_NERS_ASRI_CANTIKBGT_'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.xlsx';
-}
-function xlsxOut(rows,sheet,file){
-  const ws=XLSX.utils.aoa_to_sheet(rows);
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,sheet);
-  XLSX.writeFile(wb,file);
-}
 // ---- NAV ----
 function go(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -550,6 +493,7 @@ function go(name){
 }
 
 // ---- HELPERS ----
+function genId(){ return Math.random().toString(36).slice(2,10)+Math.random().toString(36).slice(2,6); }
 function today(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function daysExp(s){ if(!s) return 9999; const n=new Date(); n.setHours(0,0,0,0); return Math.floor((new Date(s)-n)/86400000); }
 function fmtTgl(s){ if(!s||s==='-') return '-'; const[y,m,d]=s.split('-'); return `${d}/${m}/${y}`; }
@@ -1272,74 +1216,42 @@ function importData(){
 }
 
 
-// ---- EXPORT / IMPORT ----
-let importParsed = null;
+
+// ===== EXPORT/IMPORT =====
 function renderExportImport(){}
 function exportData(){
-  const payload={version:'1.0',exportedAt:new Date().toISOString(),exportedFrom:'Stok Obat Ners Asri Cantik',
-    data:{batches,keluar:keluarData,buang:buangData,homecare:hcData}};
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.download=namaFile('EXPORT');a.click();
-  URL.revokeObjectURL(url);
+  const p={version:'1.0',exportedAt:new Date().toISOString(),data:{batches,keluar:keluarData,buang:buangData,homecare:hcData}};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(p,null,2)],{type:'application/json'}));
+  const a=document.createElement('a'); a.href=url; a.download=namaFile(); a.click(); URL.revokeObjectURL(url);
   showAl('al-exportimport','✓ File export berhasil didownload!','s');
 }
 function previewImport(e){
-  const file=e.target.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
+  const file=e.target.files[0]; if(!file)return;
+  const r=new FileReader();
+  r.onload=ev=>{
     try{
-      const parsed=JSON.parse(ev.target.result);
-      if(!parsed.data) throw new Error('Format tidak valid');
-      importParsed=parsed;
-      const d=parsed.data;
-      document.getElementById('import-preview-detail').innerHTML=
-        '<div>💊 Stok Obat: <b>'+(d.batches||[]).length+' data</b></div>'+
-        '<div>📤 Obat Keluar: <b>'+(d.keluar||[]).length+' data</b></div>'+
-        '<div>🗑 Buang: <b>'+(d.buang||[]).length+' data</b></div>'+
-        '<div>🏠 Home Care: <b>'+(d.homecare||[]).length+' data</b></div>';
+      const p=JSON.parse(ev.target.result); if(!p.data)throw new Error();
+      importParsed=p; const d=p.data;
+      document.getElementById('import-preview-detail').innerHTML='<div>💊 Stok: <b>'+(d.batches||[]).length+'</b></div><div>📤 Keluar: <b>'+(d.keluar||[]).length+'</b></div><div>🗑 Buang: <b>'+(d.buang||[]).length+'</b></div><div>🏠 HC: <b>'+(d.homecare||[]).length+'</b></div>';
       document.getElementById('import-preview').style.display='block';
-    }catch(err){showAl('al-exportimport','File tidak valid.','e');}
+    }catch(e){ showAl('al-exportimport','File tidak valid.','e'); }
   };
-  reader.readAsText(file);
-}
-function mergeData(a,b){
-  const map={};
-  (b||[]).forEach(x=>{if(x.id)map[String(x.id)]=x;});
-  (a||[]).forEach(x=>{if(x.id)map[String(x.id)]=x;});
-  return Object.values(map);
+  r.readAsText(file);
 }
 async function importData(){
   if(!importParsed)return;
-  try{
-    const d=importParsed.data;
-    batches=mergeData(batches,d.batches||[]);
-    keluarData=mergeData(keluarData,d.keluar||[]);
-    buangData=mergeData(buangData,d.buang||[]);
-    hcData=mergeData(hcData,d.homecare||[]);
-    await Promise.all([
-      sv('batches',batches),sv('keluar',keluarData),
-      sv('buang',buangData),sv('homecare',hcData)
-    ]);
-    document.getElementById('import-preview').style.display='none';
-    document.getElementById('import-file').value='';
-    importParsed=null;
-    showAl('al-exportimport','✓ Import berhasil! Data tersinkronkan ke cloud ☁️','s');
-  }catch(err){showAl('al-exportimport','Gagal import: '+err.message,'e');}
+  const d=importParsed.data;
+  batches=mergeData(batches,d.batches||[]); keluarData=mergeData(keluarData,d.keluar||[]); buangData=mergeData(buangData,d.buang||[]); hcData=mergeData(hcData,d.homecare||[]);
+  await Promise.all([sv('batches',batches),sv('keluar',keluarData),sv('buang',buangData),sv('homecare',hcData)]);
+  document.getElementById('import-preview').style.display='none'; document.getElementById('import-file').value=''; importParsed=null;
+  showAl('al-exportimport','✓ Import berhasil! Data tersinkronkan ke cloud ☁️','s');
 }
 
-// ---- INIT ----
-function setupPWA(){
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
-  }
-}
-function init(){
-  setupPWA();
-  tampilLogin();
-}
-init();
+// ===== BOOT =====
+document.getElementById('login-pass').addEventListener('keydown',e=>{ if(e.key==='Enter')cekLogin(); });
+document.getElementById('login-btn').addEventListener('click',cekLogin);
+document.getElementById('login-screen').style.display='flex';
+document.getElementById('login-pass').focus();
 
 </script>
 </body>
