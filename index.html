@@ -423,13 +423,27 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 async function sv(name, val){
-  try{ await db.collection('sa').doc('shared__'+name).set({d:JSON.stringify(val),t:Date.now()}); }
+  try{ await db.collection('stok-obat-asri').doc('shared__'+name).set({d:JSON.stringify(val),t:Date.now()}); }
   catch(e){ console.error('sv:',e.message); }
 }
 async function ld(name){
   try{
-    const doc = await db.collection('sa').doc('shared__'+name).get();
-    if(doc.exists) return JSON.parse(doc.data().d);
+    // Coba baca shared__ dulu (key baru)
+    const doc = await db.collection('stok-obat-asri').doc('shared__'+name).get();
+    if(doc.exists){
+      const data = doc.data();
+      return JSON.parse(data.d || data.data || '[]');
+    }
+    // Fallback: cari dokumen lama (dev-xxx__name) di collection
+    const col = await db.collection('stok-obat-asri').get();
+    for(const d of col.docs){
+      if(d.id.endsWith('__'+name) && !d.id.startsWith('shared')){
+        const val = JSON.parse(d.data().d || d.data().data || '[]');
+        // Migrasikan ke key baru supaya berikutnya langsung ketemu
+        await db.collection('stok-obat-asri').doc('shared__'+name).set({d:JSON.stringify(val),t:Date.now()});
+        return val;
+      }
+    }
   }catch(e){ console.error('ld:',e.message); }
   return [];
 }
