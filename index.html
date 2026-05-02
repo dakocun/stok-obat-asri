@@ -12,9 +12,9 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -1246,10 +1246,12 @@ async function importData(){
 }
 
 // ===== BOOT =====
-document.getElementById('login-pass').addEventListener('keydown',e=>{ if(e.key==='Enter')cekLogin(); });
-document.getElementById('login-btn').addEventListener('click',cekLogin);
-document.getElementById('login-screen').style.display='flex';
-document.getElementById('login-pass').focus();
+window.addEventListener('load', function() {
+  document.getElementById('login-pass').addEventListener('keydown',function(e){ if(e.key==='Enter')cekLogin(); });
+  document.getElementById('login-btn').addEventListener('click',cekLogin);
+  document.getElementById('login-screen').style.display='flex';
+  setTimeout(function(){ document.getElementById('login-pass').focus(); }, 100);
+});
 
 </script>
 </body>
