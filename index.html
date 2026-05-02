@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Stok Obat — Ners Asri Cantik</title>
+<meta name="theme-color" content="#C0426E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Stok Obat">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+@keyframes spin{to{transform:rotate(360deg)}}
+
+  :root {
+    --pk1:#E07AAA;--pk2:#EC96BE;--pk3:#F4B3D2;
+    --pkm:#E890BB;--pkb:#F0A8CC;--pkl:#F6C4DE;--pkp:#FAD8EC;--pkg:#FEF0F8;
+    --cream:#FFF6FA;--white:#FFFFFF;
+    --tx:#2D1A24;--tx2:#5A3E4E;--tx3:#A07A8E;
+    --bd:rgba(232,144,187,0.22);--bd2:rgba(232,144,187,0.38);
+    --sh:0 1px 4px rgba(214,88,138,0.09);
+    --r:12px;--rs:8px;--rl:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--tx);min-height:100vh;font-size:14px;line-height:1.6;}
+
+  .header{background:linear-gradient(135deg,#C0426E 0%,#D9608E 35%,#E890BB 70%,#F4B3D2 100%);position:sticky;top:0;z-index:100;overflow:hidden;box-shadow:0 4px 20px rgba(180,50,100,0.35);}
+  .hbg{position:absolute;inset:0;pointer-events:none;
+    background-image:
+      radial-gradient(ellipse at 10% 60%,rgba(255,255,255,0.22) 0%,transparent 55%),
+      radial-gradient(ellipse at 85% 10%,rgba(255,255,255,0.16) 0%,transparent 45%),
+      radial-gradient(ellipse at 60% 90%,rgba(255,200,220,0.18) 0%,transparent 40%);
+  }
+  /* decorative circles */
+  .hbg::before{content:'';position:absolute;width:180px;height:180px;border-radius:50%;border:2px solid rgba(255,255,255,0.12);top:-60px;right:60px;}
+  .hbg::after{content:'';position:absolute;width:100px;height:100px;border-radius:50%;border:2px solid rgba(255,255,255,0.1);top:-20px;right:20px;}
+  .htop{display:flex;align-items:center;gap:14px;padding:22px 28px 14px;position:relative;}
+  .hicon{width:50px;height:50px;background:rgba(255,255,255,0.25);border:1.5px solid rgba(255,255,255,0.5);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 12px rgba(180,50,100,0.25),inset 0 1px 0 rgba(255,255,255,0.3);}
+  .hicon svg{width:27px;height:27px;fill:white;filter:drop-shadow(0 1px 2px rgba(150,30,80,0.3));}
+  .htitle{font-family:'Playfair Display',serif;font-size:23px;font-weight:700;color:white;text-shadow:0 2px 8px rgba(150,30,80,0.4);line-height:1.2;}
+  .htitle span{font-style:italic;color:rgba(255,255,255,0.92);}
+  .hsub{color:rgba(255,255,255,0.88);font-size:11px;margin-top:3px;letter-spacing:.5px;font-weight:400;}
+  .hright{display:flex;flex-direction:column;align-items:flex-end;gap:5px;margin-left:auto;}
+  .hdate{background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.28);border-radius:20px;padding:3px 11px;color:white;font-size:11px;font-weight:500;white-space:nowrap;}
+
+  .nav{display:flex;padding:4px 20px 0;overflow-x:auto;gap:4px;background:rgba(0,0,0,0.12);}
+  .nav::-webkit-scrollbar{display:none;}
+  .nav-btn{padding:10px 16px;color:rgba(255,255,255,0.65);font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;border-radius:8px 8px 0 0;border-bottom:3px solid transparent;transition:all .2s;font-family:'DM Sans',sans-serif;white-space:nowrap;letter-spacing:.1px;}
+  .nav-btn:hover:not(.active){color:white;background:rgba(255,255,255,0.1);}
+  .nav-btn.active{color:white;background:rgba(255,255,255,0.18);border-bottom-color:white;font-weight:600;text-shadow:0 1px 4px rgba(150,30,80,0.3);}
+
+  .content{padding:20px 28px;max-width:1100px;margin:0 auto;}
+  .page{display:none;}
+  .page.active{display:block;animation:fi .22s ease;}
+  @keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+  .card{background:var(--white);border:1px solid var(--bd);border-radius:var(--rl);padding:18px 22px;margin-bottom:16px;box-shadow:var(--sh);}
+  .ctitle{font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
+
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+  .sc{background:var(--white);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);position:relative;overflow:hidden;}
+  .sc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--pkm);border-radius:3px 0 0 3px;}
+  .sc.red::before{background:#E24B4A;} .sc.amber::before{background:#EF9F27;} .sc.exp::before{background:#C44;}
+  .sl{font-size:11px;color:var(--tx3);font-weight:500;margin-bottom:3px;}
+  .sv{font-size:26px;font-weight:600;color:var(--tx);line-height:1;}
+  .sv.red{color:#A32D2D;} .sv.amber{color:#854F0B;} .sv.exp{color:#C44;}
+
+  label{font-size:12px;color:var(--tx3);font-weight:500;margin-bottom:4px;display:block;}
+  input[type=text],input[type=number],input[type=date],select,textarea{width:100%;padding:8px 11px;border:1px solid var(--bd2);border-radius:var(--rs);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--tx);background:var(--white);transition:border-color .2s,box-shadow .2s;outline:none;}
+  input[type=text]{text-transform:uppercase;}
+  input:focus,select:focus,textarea:focus{border-color:var(--pkb);box-shadow:0 0 0 3px rgba(240,168,204,0.18);}
+  input[readonly]{background:var(--pkg);color:var(--pk1);}
+  .fr{margin-bottom:12px;}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;}
+
+  .btn{padding:8px 16px;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--bd2);background:var(--white);color:var(--tx);transition:all .15s;font-family:'DM Sans',sans-serif;}
+  .btn:hover{background:var(--pkg);}
+  .btn-p{background:var(--pkm);color:white;border-color:var(--pkm);box-shadow:0 2px 8px rgba(232,144,187,0.3);}
+  .btn-p:hover{background:var(--pk1);}
+  .btn-d{background:#A32D2D;color:white;border-color:#A32D2D;}
+  .btn-d:hover{background:#791F1F;}
+  .btn-o{background:transparent;color:var(--pk1);border-color:var(--pk1);}
+  .btn-o:hover{background:var(--pkg);}
+  .btn-sm{padding:5px 12px;font-size:12px;}
+  .btn-xs{padding:3px 9px;font-size:11px;border-radius:6px;}
+  .fe{display:flex;justify-content:flex-end;gap:8px;}
+  .fb{display:flex;justify-content:space-between;align-items:center;}
+  .fg{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .div{height:1px;background:var(--bd);margin:14px 0;}
+
+  /* WARN BANNERS */
+  .wbanner{border-radius:var(--r);padding:13px 16px;margin-bottom:14px;}
+  .wbanner.exp{background:#FDECEC;border:1px solid #E24B4A;}
+  .wbanner.warn{background:#FEF3CD;border:1px solid #F6C942;}
+  .wt{font-size:12px;font-weight:600;margin-bottom:5px;}
+  .wbanner.exp .wt{color:#A32D2D;} .wbanner.warn .wt{color:#854F0B;}
+  .wi{font-size:12px;padding:2px 0;}
+  .wbanner.exp .wi{color:#7A1A1A;} .wbanner.warn .wi{color:#5A4000;}
+
+  /* STOK SECTION */
+  .ssec-hdr{display:flex;align-items:center;gap:8px;padding:10px 0 5px;border-bottom:1px solid var(--bd);margin-bottom:2px;margin-top:10px;}
+  .ssec-hdr:first-child{margin-top:0;}
+
+  /* CAMERA */
+
+
+  /* BADGES */
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:500;}
+  .bg-green{background:#EAF3DE;color:#3B6D11;}
+  .bg-red{background:#FCEBEB;color:#A32D2D;}
+  .bg-amber{background:#FAEEDA;color:#854F0B;}
+  .bg-pink{background:var(--pkg);color:var(--pk1);}
+  .bg-gray{background:#F1EFE8;color:#5F5E5A;}
+
+  /* TABLE */
+  .tw{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;padding:8px 11px;font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--bd);background:var(--cream);}
+  td{padding:9px 11px;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  tbody tr:hover td{background:var(--pkg);}
+
+  /* TAGS */
+  .tag-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
+  .tag{background:var(--pkg);color:var(--pk1);border:1px solid rgba(232,144,187,0.3);border-radius:20px;padding:3px 11px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+  .tag:hover{background:var(--pkp);}
+
+  /* OBAT PICK */
+  .opick{display:flex;align-items:center;gap:9px;padding:9px 11px;margin-bottom:5px;background:var(--cream);border:1px solid var(--bd);border-radius:var(--rs);transition:all .15s;}
+  .opick:hover{background:var(--pkg);}
+  .opick input[type=checkbox]{width:15px;height:15px;accent-color:var(--pkm);flex-shrink:0;}
+  .oplbl{flex:1;font-size:13px;cursor:pointer;}
+  .oplbl .si{font-size:11px;color:var(--tx3);}
+  .opqty{width:75px;display:none;}
+
+  .sinp{padding:7px 11px;border:1px solid var(--bd2);border-radius:var(--rs);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--tx);background:var(--white);outline:none;}
+  .sinp:focus{border-color:var(--pkb);}
+
+  .alert{padding:10px 14px;border-radius:var(--rs);font-size:13px;margin-bottom:12px;border-left:3px solid;display:none;}
+  .alert-s{background:#EAF3DE;color:#3B6D11;border-color:#639922;}
+  .alert-e{background:#FCEBEB;color:#A32D2D;border-color:#E24B4A;}
+  .alert.show{display:block;}
+
+  .empty{text-align:center;padding:28px 16px;color:var(--tx3);}
+  .eico{font-size:30px;margin-bottom:5px;opacity:.35;}
+
+  @media(max-width:640px){
+    .content{padding:12px;}
+    .htop{padding:14px 14px 10px;}
+    .nav{padding:0 12px;}
+    .g2,.g3,.g4{grid-template-columns:1fr;}
+    .stat-row{grid-template-columns:1fr 1fr;}
+    .htitle{font-size:18px;}
+  }
+
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;background:linear-gradient(135deg,#C0426E,#D9608E,#E890BB,#F4B3D2);align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+  <div style="background:white;border-radius:22px;padding:32px 28px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(150,30,80,0.35);">
+    <div style="width:72px;height:72px;background:linear-gradient(135deg,#C0426E,#E890BB);border-radius:20px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(192,66,110,0.4)">
+      <svg width="42" height="42" viewBox="0 0 56 56" fill="none">
+        <path d="M28 26C28 26 15 18 15 11.5C15 7.4 18.4 4 22.5 4C24.9 4 27 5.1 28 6.8C29 5.1 31.1 4 33.5 4C37.6 4 41 7.4 41 11.5C41 18 28 26 28 26Z" fill="white" opacity="0.95"/>
+        <rect x="8" y="32" width="40" height="16" rx="8" fill="white" opacity="0.92"/>
+        <path d="M8 40C8 35.6 11.6 32 16 32H28V48H16C11.6 48 8 44.4 8 40Z" fill="white" opacity="0.5"/>
+        <line x1="28" y1="32" x2="28" y2="48" stroke="rgba(200,80,130,0.4)" stroke-width="2"/>
+      </svg>
+    </div>
+    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#2D1A24">Stok Obat</div>
+    <div style="font-size:13px;color:#C07090;font-style:italic;margin:3px 0 22px;font-family:'DM Sans',sans-serif">Ners Asri Cantik ♥</div>
+    <input type="password" id="login-pass" placeholder="Masukkan password..." onkeydown="if(event.key==='Enter')cekLogin()"
+      style="width:100%;padding:13px;border:1.5px solid rgba(232,144,187,0.4);border-radius:10px;font-size:15px;font-family:'DM Sans',sans-serif;color:#2D1A24;outline:none;text-align:center;letter-spacing:2px;box-sizing:border-box;margin-bottom:10px">
+    <div id="login-err" style="display:none;background:#FDECEC;color:#A32D2D;border-radius:8px;padding:8px;font-size:12px;margin-bottom:10px;font-family:'DM Sans',sans-serif">❌ Password salah. Coba lagi.</div>
+    <button onclick="cekLogin()" style="width:100%;padding:13px;background:linear-gradient(135deg,#C0426E,#E890BB);color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 14px rgba(192,66,110,0.35)">Masuk →</button>
+    <div style="margin-top:14px;font-size:11px;color:#C0A0B0;font-family:'DM Sans',sans-serif">Sistem Informasi Manajemen Obat</div>
+  </div>
+</div>
+
+
+
+<div class="header">
+  <div class="hbg"></div>
+  <div class="htop">
+    <div class="hicon">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- pill horizontal -->
+  <rect x="4" y="28" width="40" height="14" rx="7" fill="white" opacity="0.95"/>
+  <rect x="4" y="28" width="20" height="14" rx="7" fill="white" opacity="0.5"/>
+  <line x1="24" y1="28" x2="24" y2="42" stroke="rgba(210,100,150,0.5)" stroke-width="1.5"/>
+  <!-- heart above -->
+  <path d="M24 24l-1.8-1.65C17.6 18.2 14 15.6 14 12c0-3.3 2.7-6 6-6 2.1 0 4.1 1.05 5.3 2.7C26.5 7.05 28.5 6 30.3 6c3.3 0 6 2.7 6 6 0 3.6-3.6 6.2-8.8 10.35L24 24z" fill="white" opacity="0.95"/>
+</svg>
+    </div>
+    <div>
+      <div class="htitle">Stok Obat <span>Ners Asri Cantik</span></div>
+      <div class="hsub">Sistem Informasi Manajemen Obat</div>
+    </div>
+    <div class="hdate" id="hdate"></div>
+  </div>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="go('masuk')">📥 Obat Masuk</button>
+    <button class="nav-btn" onclick="go('stok')">📦 Stok Obat</button>
+    <button class="nav-btn" onclick="go('keluar')">📤 Obat Keluar</button>
+    <button class="nav-btn" onclick="go('rekap')">📋 Rekap Keluar</button>
+    <button class="nav-btn" onclick="go('buang')">🗑 Buang/Expired</button>
+    <button class="nav-btn" onclick="go('laporan')">📊 Laporan Bulanan</button>
+    <button class="nav-btn" onclick="go('homecare')">🏠 Home Care</button>
+    <button class="nav-btn" onclick="go('exportimport')">💾 Export/Import</button>
+  </nav>
+</div>
+
+<div class="content">
+
+<!-- OBAT MASUK -->
+<div class="page active" id="page-masuk">
+  <div id="warn-home"></div>
+  <div id="al-masuk" class="alert"></div>
+  <div class="card">
+    <div class="ctitle">💊 Tambah Obat Masuk ke Stok</div>
+    <div class="g4">
+      <div class="fr"><label>Nama Obat</label><input type="text" id="mnam" placeholder="Contoh: Paracetamol 500mg" onkeydown="if(event.key==='Enter')document.getElementById('mjml').focus()"></div>
+      <div class="fr"><label>Jumlah</label><input type="number" id="mjml" placeholder="0" min="1" onkeydown="if(event.key==='Enter')tambahManual()"></div>
+      <div class="fr"><label>Tgl Masuk</label><input type="date" id="mtgl"></div>
+      <div class="fr"><label>Tgl Expired</label><input type="date" id="mexp"></div>
+    </div>
+    <div class="fe"><button class="btn btn-p" onclick="tambahManual()">+ Tambah ke Stok</button></div>
+  </div>
+  <div class="card">
+    <div class="ctitle">📋 Obat Baru Masuk Hari Ini</div>
+    <div id="masuk-hari-ini"></div>
+  </div>
+</div>
+
+<!-- STOK OBAT -->
+<div class="page" id="page-stok">
+  <div class="stat-row" id="statrow"></div>
+  <div class="card">
+    <div class="fb" style="margin-bottom:12px">
+      <div class="ctitle" style="margin:0">Daftar Stok Obat</div>
+      <div class="fg">
+        <input class="sinp" type="text" placeholder="🔍 Cari obat..." oninput="renderStok(this.value)" style="width:180px">
+        <button class="btn btn-p btn-sm" onclick="dlStok()">⬇ Unduh XLSX</button>
+      </div>
+    </div>
+    <div id="stokwrap"></div>
+  </div>
+</div>
+
+<!-- OBAT KELUAR -->
+<div class="page" id="page-keluar">
+  <div id="al-keluar" class="alert"></div>
+  <div class="card">
+    <div class="ctitle">🧑‍⚕️ Data Pasien & Pengambilan Obat</div>
+    <div class="g2">
+      <div class="fr"><label>Tanggal (otomatis)</label><input type="date" id="tglkel"></div>
+      <div class="fr"><label>NIK Pasien</label><input type="text" id="nikpas" placeholder="16 digit NIK" maxlength="16"></div>
+      <div class="fr"><label>Nama Pasien</label><input type="text" id="nampas" placeholder="Nama lengkap"></div>
+      <div class="fr"><label>Tgl Lahir Pasien</label><input type="date" id="tgllahirpas" oninput="hitungUmurKel()"></div>
+      <div class="fr"><label>Umur (otomatis)</label><input type="text" id="umurpas" readonly placeholder="Otomatis dari tgl lahir"></div>
+      <div class="fr"><label>Jenis Sakit / Diagnosa</label><input type="text" id="sakpas" placeholder="Contoh: Demam, ISPA..."></div>
+    </div>
+    <div class="fr" style="margin-top:4px"><label>Catatan Tambahan (opsional)</label><input type="text" id="catkel" placeholder="Contoh: Alergi obat tertentu, kondisi khusus..."></div>
+    <div class="tag-row" id="saktag"></div>
+    <div class="div"></div>
+    <div class="ctitle">💊 Pilih Obat yang Diambil</div>
+    <div id="piliobat"></div>
+    <div class="fe" style="margin-top:12px"><button class="btn btn-p" onclick="simpanKeluar()">Simpan Pengeluaran ✓</button></div>
+  </div>
+</div>
+
+<!-- REKAP KELUAR -->
+<div class="page" id="page-rekap">
+  <div class="card">
+    <div class="fb" style="margin-bottom:12px">
+      <div class="ctitle" style="margin:0">Rekap Obat Keluar</div>
+      <div class="fg">
+        <input class="sinp" type="text" placeholder="🔍 Cari nama/NIK..." oninput="renderRekap(this.value)" style="width:180px">
+        <button class="btn btn-p btn-sm" onclick="dlKeluar()">⬇ Unduh XLSX</button>
+      </div>
+    </div>
+    <div id="rekapwrap"></div>
+  </div>
+</div>
+
+<!-- BUANG / EXPIRED -->
+<div class="page" id="page-buang">
+  <div id="al-buang" class="alert"></div>
+  <div class="card">
+    <div class="ctitle">🗑 Catat Pembuangan / Pemusnahan Obat</div>
+    <div class="g3">
+      <div class="fr"><label>Pilih Obat (Batch)</label><select id="buangsel"><option value="">-- Pilih batch --</option></select></div>
+      <div class="fr"><label>Jumlah Dibuang</label><input type="number" id="buangjml" placeholder="0" min="1"></div>
+      <div class="fr"><label>Alasan</label>
+        <select id="buangals">
+          <option value="expired">Expired / Kadaluarsa</option>
+          <option value="rusak">Rusak / Cacat</option>
+          <option value="hilang">Hilang</option>
+          <option value="lainnya">Lainnya</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr"><label>Catatan Tambahan (opsional)</label><input type="text" id="buangcat" placeholder="Keterangan tambahan..."></div>
+    <div class="fe"><button class="btn btn-d" onclick="simpanBuang()">Catat Pembuangan</button></div>
+  </div>
+  <div class="card">
+    <div class="fb" style="margin-bottom:12px">
+      <div class="ctitle" style="margin:0">Riwayat Pembuangan</div>
+      <button class="btn btn-p btn-sm" onclick="dlBuang()">⬇ Unduh XLSX</button>
+    </div>
+    <div id="buangwrap"></div>
+  </div>
+</div>
+
+<!-- LAPORAN BULANAN -->
+<div class="page" id="page-laporan">
+  <div class="card">
+    <div class="ctitle">📊 Laporan Bulanan</div>
+    <div class="fg" style="margin-bottom:16px">
+      <label style="margin:0;white-space:nowrap">Pilih Bulan:</label>
+      <select id="lapbln" onchange="renderLap()" style="width:145px"></select>
+      <select id="lapthn" onchange="renderLap()" style="width:105px"></select>
+      <button class="btn btn-p btn-sm" onclick="dlLap()">⬇ Unduh XLSX</button>
+    </div>
+    <div id="lapwrap"></div>
+  </div>
+</div>
+
+
+<!-- HOME CARE -->
+<div class="page" id="page-homecare">
+  <div id="al-homecare" class="alert"></div>
+  <div class="card">
+    <div class="ctitle">🏠 Catat Kunjungan Home Care</div>
+    <div class="g2">
+      <div class="fr"><label>Tanggal Kunjungan</label><input type="date" id="hc-tgl"></div>
+      <div class="fr"><label>NIK Pasien</label><input type="text" id="hc-nik" placeholder="16 digit NIK" maxlength="16"></div>
+      <div class="fr"><label>Nama Pasien</label><input type="text" id="hc-nama" placeholder="Nama lengkap pasien"></div>
+      <div class="fr"><label>Tgl Lahir Pasien</label><input type="date" id="hc-tgllahir" oninput="hitungUmurHC()"></div>
+      <div class="fr"><label>Umur (otomatis)</label><input type="text" id="hc-umur" readonly placeholder="Otomatis dari tgl lahir"></div>
+      <div class="fr"><label>Jenis Sakit / Diagnosa</label><input type="text" id="hc-sakit" placeholder="Contoh: Hipertensi, DM..." oninput="updateHCTags()"></div>
+    </div>
+    <div class="tag-row" id="hc-saktag"></div>
+    <div class="fr"><label>Tindakan</label><input type="text" id="hc-tindakan" placeholder="Contoh: Cek tensi, injeksi, perawatan luka..."></div>
+    <div class="fr"><label>Catatan Tambahan (opsional)</label><input type="text" id="hc-catatan" placeholder="Catatan khusus..."></div>
+    <div class="fe" style="margin-top:4px"><button class="btn btn-p" onclick="simpanHC()">Simpan Kunjungan ✓</button></div>
+  </div>
+  <div class="card">
+    <div class="fb" style="margin-bottom:12px">
+      <div class="ctitle" style="margin:0">Riwayat Home Care</div>
+      <div class="fg">
+        <input class="sinp" type="text" placeholder="🔍 Cari nama/NIK..." oninput="renderHomecare(this.value)" style="width:180px">
+        <button class="btn btn-p btn-sm" onclick="dlHC()">⬇ Unduh XLSX</button>
+      </div>
+    </div>
+    <div id="hcwrap"></div>
+  </div>
+</div>
+
+
+<!-- EXPORT / IMPORT -->
+<div class="page" id="page-exportimport">
+  <div id="al-exportimport" class="alert"></div>
+  <div class="card">
+    <div class="ctitle">📤 Export Semua Data</div>
+    <p style="font-size:13px;color:var(--tx2);margin-bottom:16px;line-height:1.6">
+      Download semua data sebagai file <b>.json</b> untuk dipindahkan ke aplikasi online (Netlify).
+    </p>
+    <div class="fe">
+      <button class="btn btn-p" onclick="exportData()">📥 Download File Export (.json)</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ctitle">📥 Import Data</div>
+    <p style="font-size:13px;color:var(--tx2);margin-bottom:16px;line-height:1.6">
+      Import data dari file .json hasil export. Data akan digabung, tidak ada yang hilang.
+    </p>
+    <div class="fr">
+      <label>Pilih File Export (.json)</label>
+      <input type="file" id="import-file" accept=".json" onchange="previewImport(event)"
+        style="padding:10px;background:var(--pkg);border:1.5px dashed var(--bd2);border-radius:10px;cursor:pointer;">
+    </div>
+    <div id="import-preview" style="display:none;margin-top:14px">
+      <div style="background:var(--pkg);border:1px solid var(--pkp);border-radius:10px;padding:14px;margin-bottom:14px">
+        <div style="font-size:12px;font-weight:600;color:var(--pk1);margin-bottom:10px">📋 Preview Data yang akan Diimport:</div>
+        <div id="import-preview-detail" style="font-size:13px;color:var(--tx2);line-height:1.8"></div>
+      </div>
+      <div class="fe">
+        <button class="btn" onclick="document.getElementById('import-preview').style.display='none'">Batal</button>
+        <button class="btn btn-p" onclick="importData()">✓ Import Sekarang</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+
+const SAKIT = ['Demam','Flu','Batuk','Diare','Hipertensi','Diabetes','ISPA','Pusing','Mual','Maag','Luka','Alergi'];
+const BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const ALS = {expired:'Expired/Kadaluarsa',rusak:'Rusak/Cacat',hilang:'Hilang',lainnya:'Lainnya'};
+
+// ===================== FIREBASE =====================
+const firebaseConfig = {
+  apiKey: "AIzaSyDtOehm-Cp12n1Y3K_GhJj40buerVp9c_w",
+  authDomain: "stok-obat-asri-cantik.firebaseapp.com",
+  projectId: "stok-obat-asri-cantik",
+  storageBucket: "stok-obat-asri-cantik.firebasestorage.app",
+  messagingSenderId: "847897389700",
+  appId: "1:847897389700:web:cc6e2bf3633f67c1dfb0d1"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const COL = 'stok-obat-asri';
+
+// Save to Firestore
+async function sv(name, val){
+  try{
+    await db.collection(COL).doc('shared__'+name).set({
+      data: JSON.stringify(val),
+      updated: Date.now()
+    });
+  } catch(e){ console.error('sv error:', e); showAl('al-masuk','Gagal simpan ke cloud. Cek koneksi internet.','e'); }
+}
+
+// Load from Firestore
+async function ld(name){
+  try{
+    const doc = await db.collection(COL).doc('shared__'+name).get();
+    if(doc.exists) return JSON.parse(doc.data().data);
+  } catch(e){ console.error('ld error:', e); }
+  return [];
+}
+
+// ===================== DATA =====================
+let batches=[], keluarData=[], buangData=[], hcData=[];
+let selKeluar={};
+let curPage='masuk';
+
+// ===================== LOGIN =====================
+const PASS = btoa('SenyumSayang');
+
+function tampilLogin(){
+  document.getElementById('login-screen').style.display='flex';
+}
+
+function cekLogin(){
+  const val = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-err');
+  if(btoa(val) === PASS){
+    err.style.display='none';
+    document.getElementById('login-screen').style.display='none';
+    mulaiApp();
+  } else {
+    err.style.display='block';
+    document.getElementById('login-pass').value='';
+    document.getElementById('login-pass').focus();
+  }
+}
+
+async function mulaiApp(){
+  // Show loading
+  showLoading(true);
+  // Load ALL data from Firebase
+  [batches, keluarData, buangData, hcData] = await Promise.all([
+    ld('batches'), ld('keluar'), ld('buang'), ld('homecare')
+  ]);
+  migrasiUppercase();
+  // Setup UI
+  const d=new Date();
+  const days=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  document.getElementById('hdate').textContent=days[d.getDay()]+', '+d.getDate()+' '+BULAN[d.getMonth()]+' '+d.getFullYear();
+  document.getElementById('mtgl').value=today();
+  document.getElementById('hc-tgl').value=today();
+  showLoading(false);
+  go('masuk');
+}
+
+function showLoading(show){
+  let el = document.getElementById('loading-overlay');
+  if(!el){
+    el = document.createElement('div');
+    el.id='loading-overlay';
+    el.innerHTML='<div style="text-align:center"><div style="width:40px;height:40px;border:3px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px"></div><div style="color:white;font-family:DM Sans,sans-serif;font-size:14px">Memuat data...</div></div>';
+    el.style.cssText='position:fixed;inset:0;z-index:88888;background:linear-gradient(135deg,#C0426E,#E890BB);display:flex;align-items:center;justify-content:center';
+    document.body.appendChild(el);
+  }
+  el.style.display = show ? 'flex' : 'none';
+}
+
+// ===================== HELPERS =====================
+function genId(){ return Math.random().toString(36).slice(2,10)+Math.random().toString(36).slice(2,6); }
+function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function daysExp(s){ if(!s) return 9999; const n=new Date(); n.setHours(0,0,0,0); return Math.floor((new Date(s)-n)/86400000); }
+function fmtTgl(s){ if(!s||s==='-') return '-'; const[y,m,d]=s.split('-'); return d+'/'+m+'/'+y; }
+function stokByName(n){ return batches.filter(b=>b.namaObat===n&&b.sisaStok>0).reduce((a,b)=>a+b.sisaStok,0); }
+function allNama(){ return [...new Set(batches.map(b=>b.namaObat))].sort(); }
+function toUpper(s){ return s?s.toUpperCase():s; }
+function migrasiUppercase(){
+  let changed=false;
+  batches.forEach(b=>{ const u=toUpper(b.namaObat); if(b.namaObat!==u){b.namaObat=u;changed=true;} });
+  keluarData.forEach(r=>{ const n=toUpper(r.nama),s=toUpper(r.sakit); if(r.nama!==n||r.sakit!==s){r.nama=n;r.sakit=s;changed=true;} });
+  buangData.forEach(d=>{ const n=toUpper(d.namaObat); if(d.namaObat!==n){d.namaObat=n;changed=true;} });
+  hcData.forEach(r=>{ const n=toUpper(r.nama),s=toUpper(r.sakit),t=toUpper(r.tindakan||''); if(r.nama!==n||r.sakit!==s||r.tindakan!==t){r.nama=n;r.sakit=s;if(r.tindakan)r.tindakan=t;changed=true;} });
+}
+function showAl(id,msg,type){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.className='alert alert-'+type+' show';
+  el.textContent=msg;
+  setTimeout(()=>el.classList.remove('show'),4500);
+}
+function namaFile(prefix){
+  const d=new Date();
+  return 'STOK_OBAT_NERS_ASRI_CANTIKBGT_'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.xlsx';
+}
+function xlsxOut(rows,sheet,file){
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,sheet);
+  XLSX.writeFile(wb,file);
+}
+// ---- NAV ----
+function go(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const idx=['masuk','stok','keluar','rekap','buang','laporan','homecare','exportimport'].indexOf(name);
+  document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  curPage=name;
+  if(name==='masuk') renderWarnHome();
+  if(name==='stok') renderStok();
+  if(name==='keluar') renderKeluarForm();
+  if(name==='rekap') renderRekap();
+  if(name==='buang'){renderBuangSel();renderBuangRiwayat();}
+  if(name==='laporan'){initLap();renderLap();}
+  if(name==='homecare') renderHomecare();
+  if(name==='exportimport') renderExportImport();
+}
+
+// ---- HELPERS ----
+function today(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function daysExp(s){ if(!s) return 9999; const n=new Date(); n.setHours(0,0,0,0); return Math.floor((new Date(s)-n)/86400000); }
+function fmtTgl(s){ if(!s||s==='-') return '-'; const[y,m,d]=s.split('-'); return `${d}/${m}/${y}`; }
+function stokByName(n){ return batches.filter(b=>b.namaObat===n&&b.sisaStok>0).reduce((a,b)=>a+b.sisaStok,0); }
+function allNama(){ return [...new Set(batches.map(b=>b.namaObat))].sort(); }
+
+// ---- EXPIRED WARNING ----
+function renderWarnHome(){
+  const w=document.getElementById('warn-home');
+  const exp=batches.filter(b=>b.sisaStok>0&&daysExp(b.tglExpired)<0);
+  const warn=batches.filter(b=>b.sisaStok>0&&daysExp(b.tglExpired)>=0&&daysExp(b.tglExpired)<=30);
+  let h='';
+  if(exp.length) { h+=`<div class="wbanner exp"><div class="wt">🔴 Obat Sudah Expired — Segera Dibuang!</div>`; exp.forEach(b=>{h+=`<div class="wi">• ${b.namaObat} — expired: ${fmtTgl(b.tglExpired)} (sisa: ${b.sisaStok})</div>`;}); h+='</div>'; }
+  if(warn.length) { h+=`<div class="wbanner warn"><div class="wt">⚠️ Obat Akan Expired dalam 30 Hari</div>`; warn.forEach(b=>{const d=daysExp(b.tglExpired);h+=`<div class="wi">• ${b.namaObat} — exp: ${fmtTgl(b.tglExpired)} (${d} hari lagi, sisa: ${b.sisaStok})</div>`;}); h+='</div>'; }
+  w.innerHTML=h;
+}
+
+// ---- KAMERA ----
+// (camera removed — input manual only)
+function tambahManual(){
+  const nm=toUpper(document.getElementById('mnam').value.trim());
+  const jml=parseInt(document.getElementById('mjml').value)||0;
+  const tm=document.getElementById('mtgl').value;
+  const te=document.getElementById('mexp').value;
+  if(!nm){showAl('al-masuk','Nama obat wajib diisi.','e');return;}
+  if(jml<=0){showAl('al-masuk','Jumlah harus lebih dari 0.','e');return;}
+  batches.push({id:genId(),namaObat:nm,jumlah:jml,sisaStok:jml,tglMasuk:tm||today(),tglExpired:te||''});
+  sv('batches',batches);
+  document.getElementById('mnam').value='';document.getElementById('mjml').value='';document.getElementById('mexp').value='';
+  document.getElementById('mnam').focus();
+  showAl('al-masuk',`✓ ${nm} (${jml}) berhasil ditambahkan ke stok!`,'s');
+  renderWarnHome();
+  renderMasukHariIni();
+}
+function renderMasukHariIni(){
+  const wrap=document.getElementById('masuk-hari-ini');
+  if(!wrap)return;
+  const td=today();
+  const list=batches.filter(b=>b.tglMasuk===td);
+  if(!list.length){wrap.innerHTML='<div class="empty" style="padding:12px"><div class="eico">📭</div><p>Belum ada obat masuk hari ini.</p></div>';return;}
+  let h='<div class="tw"><table><thead><tr><th>Nama Obat</th><th>Jumlah</th><th>Tgl Expired</th></tr></thead><tbody>';
+  list.forEach(b=>{ h+=`<tr><td><b>${b.namaObat}</b></td><td>${b.jumlah}</td><td>${fmtTgl(b.tglExpired)}</td></tr>`; });
+  wrap.innerHTML=h+'</tbody></table></div>';
+}
+
+// ---- STOK PAGE ----
+function renderStok(filter=''){
+  const allN=allNama();
+  const expB=batches.filter(b=>b.sisaStok>0&&daysExp(b.tglExpired)<0);
+  const warnB=batches.filter(b=>b.sisaStok>0&&daysExp(b.tglExpired)>=0&&daysExp(b.tglExpired)<=30);
+  const habis=allN.filter(n=>stokByName(n)===0).length;
+  document.getElementById('statrow').innerHTML=`
+    <div class="sc"><div class="sl">Total Jenis Obat</div><div class="sv">${allN.length}</div></div>
+    <div class="sc red"><div class="sl">Stok Habis</div><div class="sv red">${habis}</div></div>
+    <div class="sc amber"><div class="sl">Menjelang Expired</div><div class="sv amber">${warnB.length}</div></div>
+    <div class="sc exp"><div class="sl">Sudah Expired</div><div class="sv exp">${expB.length}</div></div>`;
+  const wrap=document.getElementById('stokwrap');
+  if(!batches.length){wrap.innerHTML='<div class="empty"><div class="eico">💊</div><p>Belum ada stok. Tambah via Obat Masuk.</p></div>';return;}
+  const fil=b=>!filter||b.namaObat.toLowerCase().includes(filter.toLowerCase());
+  // Group by namaObat
+  const grouped={};
+  batches.filter(fil).forEach(b=>{
+    if(!grouped[b.namaObat]) grouped[b.namaObat]={nama:b.namaObat,batches:[]};
+    grouped[b.namaObat].batches.push(b);
+  });
+  const groups=Object.values(grouped).sort((a,b)=>a.nama.localeCompare(b.nama));
+  // Categorize groups by worst batch status
+  const catGroup=g=>{
+    const ds=g.batches.map(b=>daysExp(b.tglExpired));
+    if(ds.some(d=>d<0)) return 'exp';
+    if(ds.some(d=>d<=30)) return 'warn';
+    return 'good';
+  };
+  const gExp=groups.filter(g=>catGroup(g)==='exp');
+  const gWarn=groups.filter(g=>catGroup(g)==='warn');
+  const gGood=groups.filter(g=>catGroup(g)==='good');
+  let h='';
+  const mkSec=(title,icon,color,list)=>{
+    if(!list.length) return '';
+    let s=`<div class="ssec-hdr"><span>${icon}</span><span style="color:${color};font-size:12px;font-weight:600">${title}</span><span class="badge" style="background:${color}22;color:${color};margin-left:4px">${list.length} jenis</span></div>`;
+    s+=`<div class="tw"><table><thead><tr><th>Nama Obat</th><th>Total Stok</th><th>Batch</th><th>Stok Awal</th><th>Tgl Masuk</th><th>Tgl Expired</th><th>Sisa</th><th>Status</th><th>Aksi</th></tr></thead><tbody>`;
+    list.forEach(g=>{
+      const tot=g.batches.reduce((a,b)=>a+b.sisaStok,0);
+      g.batches.forEach((b,bi)=>{
+        const d=daysExp(b.tglExpired);
+        const ebadge=!b.tglExpired?`<span class="badge bg-gray">Tdk ada</span>`:d<0?`<span class="badge bg-red">Expired</span>`:d<=30?`<span class="badge bg-amber">${d}hr lagi</span>`:`<span class="badge bg-green">Baik</span>`;
+        if(bi===0){
+          s+=`<tr style="border-top:2px solid var(--bd2)">
+            <td rowspan="${g.batches.length}" style="font-weight:600;vertical-align:top;padding-top:12px">${g.nama}<br><span style="font-size:11px;color:var(--tx3);font-weight:400">Total: ${tot}</span></td>
+            <td rowspan="${g.batches.length}" style="font-size:18px;font-weight:700;vertical-align:top;padding-top:12px">${tot}</td>
+            <td style="color:var(--tx3);font-size:11px">#${bi+1}</td><td style="color:var(--tx3)">${b.jumlah}</td><td>${fmtTgl(b.tglMasuk)}</td><td>${fmtTgl(b.tglExpired)}</td><td><b>${b.sisaStok}</b></td><td>${ebadge}</td>
+            <td><div style="display:flex;gap:4px"><button class="btn btn-xs btn-o" data-id="${b.id}" onclick="editBatch(this)">Edit</button><button class="btn btn-xs btn-d" data-id="${b.id}" onclick="hapusBatch(this)">Hapus</button></div></td></tr>`;
+        } else {
+          s+=`<tr><td style="color:var(--tx3);font-size:11px">#${bi+1}</td><td style="color:var(--tx3)">${b.jumlah}</td><td>${fmtTgl(b.tglMasuk)}</td><td>${fmtTgl(b.tglExpired)}</td><td><b>${b.sisaStok}</b></td><td>${ebadge}</td>
+            <td><div style="display:flex;gap:4px"><button class="btn btn-xs btn-o" data-id="${b.id}" onclick="editBatch(this)">Edit</button><button class="btn btn-xs btn-d" data-id="${b.id}" onclick="hapusBatch(this)">Hapus</button></div></td></tr>`;
+        }
+      });
+    });
+    s+='</tbody></table></div>';
+    return s;
+  };
+  if(gExp.length) h+=mkSec('Sudah Expired','🔴','#A32D2D',gExp);
+  if(gWarn.length) h+=mkSec('Menjelang Expired (≤30 hari)','⚠️','#854F0B',gWarn);
+  if(gGood.length) h+=mkSec('Stok Baik','✅','#3B6D11',gGood);
+  if(!h) h='<div class="empty"><div class="eico">🔍</div><p>Tidak ada hasil.</p></div>';
+  wrap.innerHTML=h;
+}
+function editBatch(el){
+  const id=el.dataset.id;
+  const b=batches.find(x=>String(x.id)===String(id));if(!b)return;
+  const tr=el.closest('tr');
+  tr.innerHTML=`<td colspan="9" style="padding:12px;background:var(--pkg)">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px">
+      <div><label style="font-size:11px;color:var(--tx3)">Nama Obat</label>
+        <input type="text" id="eb-nama" value="${b.namaObat}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px;text-transform:uppercase"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">Stok Awal</label>
+        <input type="number" id="eb-awal" value="${b.jumlah}" min="0" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">Sisa Stok</label>
+        <input type="number" id="eb-sisa" value="${b.sisaStok}" min="0" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">Tgl Masuk</label>
+        <input type="date" id="eb-masuk" value="${b.tglMasuk||''}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">Tgl Expired</label>
+        <input type="date" id="eb-exp" value="${b.tglExpired||''}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px"></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-sm" onclick="renderStok()">Batal</button>
+      <button class="btn btn-p btn-sm" onclick="simpanEdit('${id}')">✓ Simpan</button>
+    </div>
+  </td>`;
+}
+function simpanEdit(id){
+  const b=batches.find(x=>String(x.id)===String(id));if(!b)return;
+  const nama=document.getElementById('eb-nama').value.trim();
+  const awal=parseInt(document.getElementById('eb-awal').value);
+  const sisa=parseInt(document.getElementById('eb-sisa').value);
+  const masuk=document.getElementById('eb-masuk').value;
+  const exp=document.getElementById('eb-exp').value;
+  if(!nama){showAl('al-masuk','Nama obat tidak boleh kosong.','e');return;}
+  if(isNaN(awal)||awal<0||isNaN(sisa)||sisa<0){showAl('al-masuk','Nilai stok tidak valid.','e');return;}
+  b.namaObat=nama.toUpperCase();
+  b.jumlah=awal;
+  b.sisaStok=sisa;
+  b.tglMasuk=masuk;
+  b.tglExpired=exp;
+  sv('batches',batches);renderStok();renderWarnHome();renderMasukHariIni();
+}
+function hapusBatch(el){
+  const id=el.dataset.id;
+  const b=batches.find(x=>String(x.id)===String(id));
+  if(!b)return;
+  const tr=el.closest('tr');
+  tr.innerHTML=`<td colspan="9" style="padding:10px;background:#FDECEC">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:13px">Hapus <b>${b.namaObat}</b>?</span>
+      <button class="btn btn-d btn-sm" onclick="konfirmHapus('${id}')">Ya, Hapus</button>
+      <button class="btn btn-sm" onclick="renderStok()">Batal</button>
+    </div>
+  </td>`;
+}
+function konfirmHapus(id){
+  batches=batches.filter(x=>String(x.id)!==String(id));
+  sv('batches',batches);renderStok();renderWarnHome();renderMasukHariIni();
+}
+
+// ---- OBAT KELUAR ----
+function renderKeluarForm(){
+  document.getElementById('tglkel').value=today();
+  selKeluar={};
+  const tags=document.getElementById('saktag');
+  tags.innerHTML='<span style="font-size:11px;color:var(--tx3)">Pilih cepat:</span>';
+  SAKIT.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='tag'; b.textContent=t;
+    b.onclick=()=>{
+      const el=document.getElementById('sakpas');
+      const cur=el.value.split(',').map(x=>x.trim()).filter(x=>x);
+      if(cur.includes(t)){el.value=cur.filter(x=>x!==t).join(', ');}
+      else{cur.push(t);el.value=cur.join(', ');}
+      // highlight active tags
+      tags.querySelectorAll('.tag').forEach(btn=>{
+        const vals=el.value.split(',').map(x=>x.trim());
+        btn.style.background=vals.includes(btn.textContent)?'var(--pkm)':'var(--pkg)';
+        btn.style.color=vals.includes(btn.textContent)?'white':'var(--pk1)';
+      });
+    };
+    tags.appendChild(b);
+  });
+  const wrap=document.getElementById('piliobat');
+  const names=allNama().filter(n=>stokByName(n)>0);
+  if(!names.length){wrap.innerHTML='<div class="empty"><div class="eico">📭</div><p>Stok kosong. Tambah via Obat Masuk.</p></div>';return;}
+  let h='<div>';
+  names.forEach(n=>{
+    const ek=encodeURIComponent(n),tot=stokByName(n);
+    h+=`<div class="opick"><input type="checkbox" id="chk${ek}" onchange="togKel('${ek}','${n.replace(/'/g,"\\'")}')">
+    <label class="oplbl" for="chk${ek}">${n}<br><span class="si">Stok tersedia: ${tot}</span></label>
+    <input type="number" id="qty${ek}" class="opqty" min="1" max="${tot}" placeholder="Qty" value="1"></div>`;
+  });
+  wrap.innerHTML=h+'</div>';
+}
+function togKel(ek,k){
+  const chk=document.getElementById(`chk${ek}`),qty=document.getElementById(`qty${ek}`);
+  if(chk.checked){qty.style.display='block';selKeluar[k]=1;qty.oninput=()=>selKeluar[k]=parseInt(qty.value)||0;}
+  else{qty.style.display='none';delete selKeluar[k];}
+}
+function simpanKeluar(){
+  const tgl=document.getElementById('tglkel').value;
+  const nik=document.getElementById('nikpas').value.trim();
+  const nama=toUpper(document.getElementById('nampas').value.trim());
+  const sakit=toUpper(document.getElementById('sakpas').value.trim());
+  const catkel=document.getElementById('catkel').value.trim();
+  const tgllahirkel=document.getElementById('tgllahirpas').value;
+  const umurkel=document.getElementById('umurpas').value;
+  if(!nik||!nama||!sakit){showAl('al-keluar','Isi semua: NIK, nama, dan jenis sakit.','e');return;}
+  const olist=Object.values(selKeluar).filter(x=>x.qty>0);
+  if(!olist.length){showAl('al-keluar','Pilih minimal 1 obat.','e');return;}
+  // Validate each batch
+  for(const x of olist){
+    const b=batches.find(bt=>String(bt.id)===String(x.batchId));
+    if(!b||b.sisaStok<x.qty){showAl('al-keluar',`Stok batch "${x.namaObat}" tidak cukup (sisa: ${b?b.sisaStok:0}).`,'e');return;}
+  }
+  // Deduct directly from selected batch
+  const detail=[];
+  for(const x of olist){
+    const b=batches.find(bt=>String(bt.id)===String(x.batchId));
+    if(!b)continue;
+    b.sisaStok-=x.qty;
+    detail.push({batchId:b.id,namaObat:x.namaObat,qty:x.qty,tglExpired:b.tglExpired});
+  }
+  sv('batches',batches);
+  keluarData.unshift({id:genId(),tgl,nik,nama,tglLahir:tgllahirkel,umur:umurkel,sakit,catatan:catkel,obat:detail});
+  sv('keluar',keluarData);
+  showAl('al-keluar',`✓ Pengeluaran obat untuk ${nama} berhasil disimpan!`,'s');
+  document.getElementById('nikpas').value='';document.getElementById('nampas').value='';document.getElementById('sakpas').value='';document.getElementById('catkel').value='';document.getElementById('tgllahirpas').value='';document.getElementById('umurpas').value='';
+  selKeluar={};renderKeluarForm();
+}
+
+// ---- REKAP KELUAR ----
+function renderRekap(filter=''){
+  const wrap=document.getElementById('rekapwrap');
+  const data=keluarData.filter(r=>r.nama.toLowerCase().includes((filter||'').toLowerCase())||r.nik.includes(filter||''));
+  if(!data.length){wrap.innerHTML='<div class="empty"><div class="eico">📋</div><p>Belum ada rekap obat keluar.</p></div>';return;}
+  let h=`<div class="tw"><table><thead><tr><th>No</th><th>Tanggal</th><th>NIK</th><th>Nama Pasien</th><th>Jenis Sakit</th><th>Catatan</th><th>Obat Diambil</th><th>Aksi</th></tr></thead><tbody>`;
+  data.forEach((r,i)=>{
+    const os=r.obat.map(o=>`<span class="badge bg-pink" style="margin:1px;font-size:10px">${o.namaObat} ×${o.qty}</span>`).join(' ');
+    h+=`<tr><td style="color:var(--tx3)">${i+1}</td><td>${fmtTgl(r.tgl)}</td><td style="font-size:12px;font-family:monospace">${r.nik}</td><td><b>${r.nama}</b></td><td>${r.sakit}</td><td style="font-size:12px;color:var(--tx3)">${r.catatan||'-'}</td><td style="max-width:180px">${os}</td><td><div style="display:flex;gap:4px"><button class="btn btn-xs btn-o" data-id="${r.id}" onclick="editRekap(this)">Edit</button><button class="btn btn-xs btn-d" data-id="${r.id}" onclick="hapusRekap(this)">Hapus</button></div></td></tr>`;
+  });
+  wrap.innerHTML=h+'</tbody></table></div>';
+}
+function hapusRekap(el){
+  const id=el.dataset.id;
+  const tr=el.closest('tr');
+  tr.innerHTML=`<td colspan="9" style="padding:10px;background:#FDECEC">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:13px">Hapus data ini? Stok tidak dikembalikan.</span>
+      <button class="btn btn-d btn-sm" onclick="konfirmHapusRekap('${id}')">Ya, Hapus</button>
+      <button class="btn btn-sm" onclick="renderRekap()">Batal</button>
+    </div>
+  </td>`;
+}
+function konfirmHapusRekap(id){keluarData=keluarData.filter(r=>String(r.id)!==String(id));sv('keluar',keluarData);renderRekap();}
+function editRekap(el){
+  const id=el.dataset.id;
+  const r=keluarData.find(x=>String(x.id)===String(id));if(!r)return;
+  const tr=el.closest('tr');
+  const obatOpts=allNama().map(n=>`<option value="${n}">${n}</option>`).join('');
+  const obatChecked=r.obat.map(o=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+    <input type="checkbox" checked data-nama="${o.namaObat}" class="erek-chk">
+    <span style="flex:1;font-size:12px">${o.namaObat}</span>
+    <input type="number" value="${o.qty}" min="1" data-nama="${o.namaObat}" class="erek-qty" style="width:65px;padding:3px 6px;border:1px solid var(--bd2);border-radius:5px;font-size:12px">
+  </div>`).join('');
+  tr.innerHTML=`<td colspan="8" style="padding:12px;background:var(--pkg)">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div><label style="font-size:11px;color:var(--tx3)">Tanggal</label><input type="date" id="er-tgl" value="${r.tgl}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">NIK</label><input type="text" id="er-nik" value="${r.nik}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">Nama Pasien</label><input type="text" id="er-nama" value="${r.nama}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px;text-transform:uppercase"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">Jenis Sakit</label><input type="text" id="er-sakit" value="${r.sakit}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px;text-transform:uppercase"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">Tgl Lahir</label><input type="date" id="er-tgllahir" value="${r.tglLahir||''}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">Umur</label><input type="text" id="er-umur" value="${r.umur||''}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">Catatan</label><input type="text" id="er-catatan" value="${r.catatan||''}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px"></div>
+    </div>
+    <div><label style="font-size:11px;color:var(--tx3);margin-bottom:6px;display:block">Obat Diambil</label>${obatChecked}</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+      <button class="btn btn-sm" onclick="renderRekap()">Batal</button>
+      <button class="btn btn-p btn-sm" onclick="simpanEditRekap('${id}')">✓ Simpan</button>
+    </div>
+  </td>`;
+}
+function simpanEditRekap(id){
+  const r=keluarData.find(x=>String(x.id)===String(id));if(!r)return;
+  r.tgl=document.getElementById('er-tgl').value;
+  r.nik=document.getElementById('er-nik').value.trim();
+  r.nama=toUpper(document.getElementById('er-nama').value.trim());
+  r.sakit=toUpper(document.getElementById('er-sakit').value.trim());
+  r.tglLahir=document.getElementById('er-tgllahir').value;
+  r.umur=document.getElementById('er-umur').value;
+  r.catatan=document.getElementById('er-catatan').value.trim();
+  // Update obat qty from inline inputs
+  document.querySelectorAll('.erek-chk').forEach(chk=>{
+    const nm=chk.dataset.nama;
+    const qtyEl=document.querySelector(`.erek-qty[data-nama="${nm}"]`);
+    const ob=r.obat.find(o=>o.namaObat===nm);
+    if(ob&&qtyEl) ob.qty=parseInt(qtyEl.value)||ob.qty;
+  });
+  sv('keluar',keluarData);renderRekap();
+}
+
+// ---- BUANG ----
+function renderBuangSel(){
+  const sel=document.getElementById('buangsel');
+  sel.innerHTML='<option value="">-- Pilih batch obat --</option>';
+  batches.filter(b=>b.sisaStok>0).sort((a,b)=>a.namaObat.localeCompare(b.namaObat)).forEach(b=>{
+    const d=daysExp(b.tglExpired);
+    const info=b.tglExpired?(d<0?' [EXPIRED]':` [exp:${fmtTgl(b.tglExpired)}]`):'';
+    sel.innerHTML+=`<option value="${b.id}">${b.namaObat}${info} — sisa ${b.sisaStok}</option>`;
+  });
+}
+function simpanBuang(){
+  const bid=parseInt(document.getElementById('buangsel').value);
+  const jml=parseInt(document.getElementById('buangjml').value)||0;
+  const als=document.getElementById('buangals').value;
+  const cat=document.getElementById('buangcat').value.trim();
+  if(!bid){showAl('al-buang','Pilih batch obat terlebih dahulu.','e');return;}
+  const b=batches.find(x=>x.id===bid);if(!b)return;
+  if(jml<=0||jml>b.sisaStok){showAl('al-buang',`Jumlah tidak valid. Sisa stok batch ini: ${b.sisaStok}.`,'e');return;}
+  b.sisaStok-=jml;sv('batches',batches);
+  buangData.unshift({id:genId(),tgl:today(),batchId:bid,namaObat:b.namaObat,jumlah:jml,alasan:als,catatan:cat});
+  sv('buang',buangData);
+  showAl('al-buang',`✓ ${jml} ${b.namaObat} dicatat sebagai dibuang (${ALS[als]}).`,'s');
+  document.getElementById('buangjml').value='';document.getElementById('buangcat').value='';
+  renderBuangSel();renderBuangRiwayat();
+}
+function renderBuangRiwayat(){
+  const wrap=document.getElementById('buangwrap');
+  if(!buangData.length){wrap.innerHTML='<div class="empty"><div class="eico">🗑</div><p>Belum ada riwayat pembuangan.</p></div>';return;}
+  let h=`<div class="tw"><table><thead><tr><th>No</th><th>Tanggal</th><th>Nama Obat</th><th>Jumlah</th><th>Alasan</th><th>Catatan</th><th>Aksi</th></tr></thead><tbody>`;
+  buangData.forEach((d,i)=>{
+    h+=`<tr><td style="color:var(--tx3)">${i+1}</td><td>${fmtTgl(d.tgl)}</td><td><b>${d.namaObat}</b></td><td>${d.jumlah}</td><td><span class="badge bg-red">${ALS[d.alasan]||d.alasan}</span></td><td style="font-size:12px;color:var(--tx3)">${d.catatan||'-'}</td><td><button class="btn btn-xs btn-d" data-id="${d.id}" onclick="hapusBuang(this)">Hapus</button></td></tr>`;
+  });
+  wrap.innerHTML=h+'</tbody></table></div>';
+}
+function hapusBuang(el){
+  const id=el.dataset.id;
+  const tr=el.closest('tr');
+  tr.innerHTML=`<td colspan="7" style="padding:10px;background:#FDECEC">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:13px">Hapus catatan ini?</span>
+      <button class="btn btn-d btn-sm" onclick="konfirmHapusBuang('${id}')">Ya, Hapus</button>
+      <button class="btn btn-sm" onclick="renderBuangRiwayat()">Batal</button>
+    </div>
+  </td>`;
+}
+function konfirmHapusBuang(id){buangData=buangData.filter(d=>String(d.id)!==String(id));sv('buang',buangData);renderBuangRiwayat();}
+
+// ---- LAPORAN ----
+function initLap(){
+  const bs=document.getElementById('lapbln'),ts=document.getElementById('lapthn');
+  if(!bs.options.length){BULAN.forEach((m,i)=>bs.innerHTML+=`<option value="${i+1}"${i+1===new Date().getMonth()+1?' selected':''}>${m}</option>`);}
+  if(!ts.options.length){const yr=new Date().getFullYear();for(let y=yr;y>=yr-3;y--)ts.innerHTML+=`<option value="${y}"${y===yr?' selected':''}>${y}</option>`;}
+}
+function renderLap(){
+  const bln=String(document.getElementById('lapbln').value).padStart(2,'0');
+  const thn=document.getElementById('lapthn').value;
+  const pfx=`${thn}-${bln}`;
+  const masuk=batches.filter(b=>b.tglMasuk&&b.tglMasuk.startsWith(pfx));
+  const keluar=keluarData.filter(r=>r.tgl&&r.tgl.startsWith(pfx));
+  const buang=buangData.filter(d=>d.tgl&&d.tgl.startsWith(pfx));
+  const tm=masuk.reduce((a,b)=>a+b.jumlah,0);
+  const tk=keluar.reduce((a,r)=>a+r.obat.reduce((x,o)=>x+o.qty,0),0);
+  const tb=buang.reduce((a,d)=>a+d.jumlah,0);
+  const bn=BULAN[parseInt(bln)-1];
+  let h=`<div class="stat-row" style="grid-template-columns:repeat(3,1fr)">
+    <div class="sc"><div class="sl">Obat Masuk ${bn}</div><div class="sv">${tm}</div></div>
+    <div class="sc amber"><div class="sl">Obat Keluar ${bn}</div><div class="sv amber">${tk}</div></div>
+    <div class="sc red"><div class="sl">Obat Dibuang ${bn}</div><div class="sv red">${tb}</div></div></div>`;
+  const mkT=(title,cols,rows)=>{
+    let s=`<div style="font-size:12px;font-weight:600;color:var(--tx3);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.06em">${title}</div>`;
+    if(!rows.length)return s+'<div class="empty" style="padding:14px"><p>Tidak ada data.</p></div>';
+    s+=`<div class="tw"><table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+    rows.forEach(r=>{s+=`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`;});
+    return s+'</tbody></table></div>';
+  };
+  h+=mkT('Rincian Obat Masuk',['Nama Obat','Jumlah','Tgl Masuk','Tgl Expired'],masuk.map(b=>[b.namaObat,b.jumlah,fmtTgl(b.tglMasuk),fmtTgl(b.tglExpired)]));
+  h+=mkT('Rincian Obat Keluar ke Pasien',['Tanggal','Nama Pasien','NIK','Sakit','Catatan','Obat'],keluar.map(r=>[fmtTgl(r.tgl),`<b>${r.nama}</b>`,`<span style="font-family:monospace;font-size:11px">${r.nik}</span>`,r.sakit,r.catatan||'-',r.obat.map(o=>`${o.namaObat}×${o.qty}`).join(', ')]));
+  h+=mkT('Rincian Obat Dibuang/Expired',['Tanggal','Nama Obat','Jumlah','Alasan','Catatan'],buang.map(d=>[fmtTgl(d.tgl),`<b>${d.namaObat}</b>`,d.jumlah,`<span class="badge bg-red">${ALS[d.alasan]||d.alasan}</span>`,d.catatan||'-']));
+  document.getElementById('lapwrap').innerHTML=h;
+}
+
+// ---- DOWNLOAD XLSX ----
+function namaFile(prefix){
+  const d=new Date();
+  const thn=d.getFullYear();
+  const bln=String(d.getMonth()+1).padStart(2,'0');
+  const tgl=String(d.getDate()).padStart(2,'0');
+  return `STOK_OBAT_NERS_ASRI_CANTIKBGT_${thn}${bln}${tgl}.xlsx`;
+}
+function xlsxOut(rows,sheet,file){const ws=XLSX.utils.aoa_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,sheet);XLSX.writeFile(wb,file);}
+function dlStok(){
+  if(!batches.length){alert('Stok masih kosong.');return;}
+  const rows=[['No','Nama Obat','Sisa Stok','Stok Awal','Tgl Masuk','Tgl Expired','Status']];
+  batches.sort((a,b)=>a.namaObat.localeCompare(b.namaObat)).forEach((b,i)=>{
+    const d=daysExp(b.tglExpired);const st=!b.tglExpired?'Baik':d<0?'Expired':d<=30?'Menjelang Expired':'Baik';
+    rows.push([i+1,b.namaObat,b.sisaStok,b.jumlah,b.tglMasuk,b.tglExpired||'-',st]);
+  });
+  xlsxOut(rows,'Stok Obat',namaFile('STOK_OBAT'));
+}
+function dlKeluar(){
+  if(!keluarData.length){alert('Rekap keluar masih kosong.');return;}
+  const rows=[['No','Tanggal','NIK','Nama Pasien','Jenis Sakit','Catatan','Obat yang Diambil']];
+  keluarData.forEach((r,i)=>rows.push([i+1,r.tgl,r.nik,r.nama,r.sakit,r.catatan||'-',r.obat.map(o=>`${o.namaObat}(${o.qty})`).join(';')]));
+  xlsxOut(rows,'Rekap Keluar',namaFile('REKAP_KELUAR'));
+}
+function dlBuang(){
+  if(!buangData.length){alert('Riwayat pembuangan kosong.');return;}
+  const rows=[['No','Tanggal','Nama Obat','Jumlah','Alasan','Catatan']];
+  buangData.forEach((d,i)=>rows.push([i+1,d.tgl,d.namaObat,d.jumlah,ALS[d.alasan]||d.alasan,d.catatan||'-']));
+  xlsxOut(rows,'Riwayat Buang',namaFile('BUANG_OBAT'));
+}
+function dlLap(){
+  const bln=String(document.getElementById('lapbln').value).padStart(2,'0');
+  const thn=document.getElementById('lapthn').value;
+  const pfx=`${thn}-${bln}`,bn=BULAN[parseInt(bln)-1];
+  const mk=batches.filter(b=>b.tglMasuk&&b.tglMasuk.startsWith(pfx));
+  const kl=keluarData.filter(r=>r.tgl&&r.tgl.startsWith(pfx));
+  const bg=buangData.filter(d=>d.tgl&&d.tgl.startsWith(pfx));
+  const wb=XLSX.utils.book_new();
+  const m=[['Nama Obat','Jumlah','Tgl Masuk','Tgl Expired']];mk.forEach(b=>m.push([b.namaObat,b.jumlah,b.tglMasuk,b.tglExpired||'-']));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(m),'Obat Masuk');
+  const k=[['Tanggal','Nama Pasien','NIK','Jenis Sakit','Obat']];kl.forEach(r=>k.push([r.tgl,r.nama,r.nik,r.sakit,r.obat.map(o=>`${o.namaObat}(${o.qty})`).join(';')]));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(k),'Obat Keluar');
+  const bg2=[['Tanggal','Nama Obat','Jumlah','Alasan','Catatan']];bg.forEach(d=>bg2.push([d.tgl,d.namaObat,d.jumlah,ALS[d.alasan]||d.alasan,d.catatan||'-']));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(bg2),'Obat Dibuang');
+  XLSX.writeFile(wb,namaFile('LAPORAN_'+bn.toUpperCase()+'_'+thn));
+}
+
+// ---- ALERT ----
+function showAl(id,msg,type){
+  const el=document.getElementById(id);
+  el.className=`alert alert-${type} show`;el.textContent=msg;
+  setTimeout(()=>el.classList.remove('show'),4500);
+}
+
+// ---- PWA ----
+let deferredPrompt=null;
+function setupPWA(){
+  // SVG icon: pill + heart white on pink
+  // Generate PNG icon via canvas for proper PWA support
+  function makeIcon(size){
+    const cv=document.createElement('canvas');
+    cv.width=size;cv.height=size;
+    const ctx=cv.getContext('2d');
+    const s=size/192;
+    // background rounded rect
+    const r=38*s;
+    ctx.beginPath();
+    ctx.moveTo(r,0);ctx.lineTo(size-r,0);ctx.quadraticCurveTo(size,0,size,r);
+    ctx.lineTo(size,size-r);ctx.quadraticCurveTo(size,size,size-r,size);
+    ctx.lineTo(r,size);ctx.quadraticCurveTo(0,size,0,size-r);
+    ctx.lineTo(0,r);ctx.quadraticCurveTo(0,0,r,0);ctx.closePath();
+    const grad=ctx.createLinearGradient(0,0,size,size);
+    grad.addColorStop(0,'#C0426E');grad.addColorStop(0.5,'#E07AAA');grad.addColorStop(1,'#F4B3D2');
+    ctx.fillStyle=grad;ctx.fill();
+    // heart
+    ctx.fillStyle='rgba(255,255,255,0.95)';
+    ctx.beginPath();
+    const hx=96*s,hy=82*s,hw=22*s;
+    ctx.moveTo(hx,hy);
+    ctx.bezierCurveTo(hx,hy-hw,hx-hw*1.8,hy-hw*1.6,hx-hw*1.8,hy-hw*0.6);
+    ctx.bezierCurveTo(hx-hw*1.8,hy+hw*0.4,hx,hy+hw*1.2,hx,hy+hw*1.4);
+    ctx.bezierCurveTo(hx,hy+hw*1.2,hx+hw*1.8,hy+hw*0.4,hx+hw*1.8,hy-hw*0.6);
+    ctx.bezierCurveTo(hx+hw*1.8,hy-hw*1.6,hx,hy-hw,hx,hy);
+    ctx.fill();
+    // pill body
+    const px=28*s,py=102*s,pw=136*s,ph=34*s,pr=17*s;
+    ctx.beginPath();
+    ctx.moveTo(px+pr,py);ctx.lineTo(px+pw-pr,py);
+    ctx.quadraticCurveTo(px+pw,py,px+pw,py+pr);
+    ctx.lineTo(px+pw,py+ph-pr);ctx.quadraticCurveTo(px+pw,py+ph,px+pw-pr,py+ph);
+    ctx.lineTo(px+pr,py+ph);ctx.quadraticCurveTo(px,py+ph,px,py+ph-pr);
+    ctx.lineTo(px,py+pr);ctx.quadraticCurveTo(px,py,px+pr,py);
+    ctx.closePath();
+    ctx.fillStyle='rgba(255,255,255,0.95)';ctx.fill();
+    // pill left half tint
+    ctx.save();ctx.clip();
+    ctx.fillStyle='rgba(255,255,255,0.4)';
+    ctx.fillRect(px,py,pw/2,ph);
+    // pill divider
+    ctx.strokeStyle='rgba(210,100,150,0.45)';ctx.lineWidth=2*s;
+    ctx.beginPath();ctx.moveTo(px+pw/2,py);ctx.lineTo(px+pw/2,py+ph);ctx.stroke();
+    ctx.restore();
+    return cv.toDataURL('image/png');
+  }
+  const icon192=makeIcon(192);
+  const icon512=makeIcon(512);
+  const manifest={
+    name:'Stok Obat Ners Asri Cantik',
+    short_name:'Stok Obat',
+    description:'Sistem Informasi Manajemen Obat',
+    start_url:location.href,
+    display:'standalone',
+    background_color:'#FFF6FA',
+    theme_color:'#C0426E',
+    orientation:'portrait-primary',
+    icons:[
+      {src:icon192,sizes:'192x192',type:'image/png',purpose:'any maskable'},
+      {src:icon512,sizes:'512x512',type:'image/png',purpose:'any maskable'}
+    ]
+  };
+  const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+  document.getElementById('pwa-manifest').href=URL.createObjectURL(blob);
+
+  // Service worker for offline
+  if('serviceWorker' in navigator){
+    const sw=`const C='sa-v1';self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.add(location.href)).catch(()=>{})));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)).catch(()=>{})));`;
+    const swUrl=URL.createObjectURL(new Blob([sw],{type:'application/javascript'}));
+    navigator.serviceWorker.register(swUrl).catch(()=>{});
+  }
+
+  // Catch install prompt
+  window.addEventListener('beforeinstallprompt',e=>{
+    e.preventDefault();
+    deferredPrompt=e;
+    // Show popup if not dismissed before
+    // install prompt captured
+  });
+  window.addEventListener('appinstalled',()=>{
+    deferredPrompt=null;
+  });
+
+}
+
+// ---- HOME CARE ----
+let hcData=[];
+function loadHC(){ hcData=ld('homecare')||[]; }
+function hitungUmurKel(){
+  const tl=document.getElementById('tgllahirpas').value;
+  if(!tl){document.getElementById('umurpas').value='';return;}
+  const lahir=new Date(tl),now=new Date();
+  let umur=now.getFullYear()-lahir.getFullYear();
+  const m=now.getMonth()-lahir.getMonth();
+  if(m<0||(m===0&&now.getDate()<lahir.getDate())) umur--;
+  document.getElementById('umurpas').value=umur+' tahun';
+}
+function renderHCTags(){
+  const tags=document.getElementById('hc-saktag');
+  if(!tags) return;
+  tags.innerHTML='<span style="font-size:11px;color:var(--tx3)">Pilih cepat:</span>';
+  SAKIT.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='tag'; b.textContent=t;
+    b.onclick=()=>{
+      const el=document.getElementById('hc-sakit');
+      const cur=el.value.split(',').map(x=>x.trim()).filter(x=>x);
+      if(cur.includes(t)){el.value=cur.filter(x=>x!==t).join(', ');}
+      else{cur.push(t);el.value=cur.join(', ');}
+      updateHCTags();
+    };
+    tags.appendChild(b);
+  });
+  updateHCTags();
+}
+function updateHCTags(){
+  const tags=document.getElementById('hc-saktag');
+  if(!tags) return;
+  const el=document.getElementById('hc-sakit');
+  const vals=el.value.split(',').map(x=>x.trim());
+  tags.querySelectorAll('.tag').forEach(btn=>{
+    btn.style.background=vals.includes(btn.textContent)?'var(--pkm)':'var(--pkg)';
+    btn.style.color=vals.includes(btn.textContent)?'white':'var(--pk1)';
+  });
+}
+function hitungUmurHC(){
+  const tl=document.getElementById('hc-tgllahir').value;
+  if(!tl){document.getElementById('hc-umur').value='';return;}
+  const lahir=new Date(tl), now=new Date();
+  let umur=now.getFullYear()-lahir.getFullYear();
+  const m=now.getMonth()-lahir.getMonth();
+  if(m<0||(m===0&&now.getDate()<lahir.getDate())) umur--;
+  document.getElementById('hc-umur').value=umur+' tahun';
+}
+function renderHomecare(filter=''){
+  document.getElementById('hc-tgl').value=today();
+  renderHCTags();
+  const wrap=document.getElementById('hcwrap');
+  const data=hcData.filter(r=>r.nama.toLowerCase().includes((filter||'').toLowerCase())||r.nik.includes(filter||''));
+  if(!data.length){wrap.innerHTML='<div class="empty"><div class="eico">🏠</div><p>Belum ada catatan home care.</p></div>';return;}
+  let h=`<div class="tw"><table><thead><tr><th>No</th><th>Tanggal</th><th>Nama Pasien</th><th>NIK</th><th>Tgl Lahir</th><th>Umur</th><th>Diagnosa</th><th>Tindakan</th><th>Catatan</th><th>Aksi</th></tr></thead><tbody>`;
+  data.forEach((r,i)=>{
+    h+=`<tr><td style="color:var(--tx3)">${i+1}</td><td>${fmtTgl(r.tgl)}</td><td><b>${r.nama}</b></td><td style="font-size:12px;font-family:monospace">${r.nik}</td><td>${fmtTgl(r.tglLahir)}</td><td>${r.umur||'-'}</td><td>${r.sakit}</td><td style="font-size:12px">${r.tindakan}</td><td style="font-size:12px;color:var(--tx3)">${r.catatan||'-'}</td>
+    <td><div style="display:flex;gap:4px">
+      <button class="btn btn-xs btn-o" data-id="${r.id}" onclick="editHC(this)">Edit</button>
+      <button class="btn btn-xs btn-d" data-id="${r.id}" onclick="hapusHC(this)">Hapus</button>
+    </div></td></tr>`;
+  });
+  wrap.innerHTML=h+'</tbody></table></div>';
+}
+function simpanHC(){
+  const tgl=document.getElementById('hc-tgl').value;
+  const nik=document.getElementById('hc-nik').value.trim();
+  const nama=toUpper(document.getElementById('hc-nama').value.trim());
+  const tglLahir=document.getElementById('hc-tgllahir').value;
+  const umur=document.getElementById('hc-umur').value;
+  const sakit=toUpper(document.getElementById('hc-sakit').value.trim());
+  const tindakan=toUpper(document.getElementById('hc-tindakan').value.trim());
+  const catatan=document.getElementById('hc-catatan').value.trim();
+  if(!nik||!nama||!sakit||!tindakan){showAl('al-homecare','Isi NIK, nama, diagnosa, dan tindakan.','e');return;}
+  hcData.unshift({id:genId(),tgl,nik,nama,tglLahir,umur,sakit,tindakan,catatan});
+  sv('homecare',hcData);
+  showAl('al-homecare','✓ Kunjungan home care untuk '+nama+' berhasil disimpan!','s');
+  ['hc-nik','hc-nama','hc-tgllahir','hc-umur','hc-sakit','hc-tindakan','hc-catatan'].forEach(id=>{document.getElementById(id).value='';});
+  renderHCTags();
+  renderHomecare();
+}
+function editHC(el){
+  const id=el.dataset.id;
+  const r=hcData.find(x=>String(x.id)===String(id));if(!r)return;
+  const tr=el.closest('tr');
+  tr.innerHTML=`<td colspan="10" style="padding:12px;background:var(--pkg)">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+      <div><label style="font-size:11px;color:var(--tx3)">Tanggal</label><input type="date" id="eh-tgl" value="${r.tgl}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">NIK</label><input type="text" id="eh-nik" value="${r.nik}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">Nama Pasien</label><input type="text" id="eh-nama" value="${r.nama}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px;text-transform:uppercase"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">Tgl Lahir</label><input type="date" id="eh-tgllahir" value="${r.tglLahir||''}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">Umur</label><input type="text" id="eh-umur" value="${r.umur||''}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">Diagnosa</label><input type="text" id="eh-sakit" value="${r.sakit}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px;text-transform:uppercase"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">Tindakan</label><input type="text" id="eh-tindakan" value="${r.tindakan}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px;text-transform:uppercase"></div>
+      <div><label style="font-size:11px;color:var(--tx3)">Catatan</label><input type="text" id="eh-catatan" value="${r.catatan||''}" style="width:100%;padding:6px 8px;border:1px solid var(--bd2);border-radius:6px;font-size:13px"></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-sm" onclick="renderHomecare()">Batal</button>
+      <button class="btn btn-p btn-sm" onclick="simpanEditHC('${id}')">✓ Simpan</button>
+    </div>
+  </td>`;
+}
+function simpanEditHC(id){
+  const r=hcData.find(x=>String(x.id)===String(id));if(!r)return;
+  r.tgl=document.getElementById('eh-tgl').value;
+  r.nik=document.getElementById('eh-nik').value.trim();
+  r.nama=toUpper(document.getElementById('eh-nama').value.trim());
+  r.tglLahir=document.getElementById('eh-tgllahir').value;
+  r.umur=document.getElementById('eh-umur').value;
+  r.sakit=toUpper(document.getElementById('eh-sakit').value.trim());
+  r.tindakan=toUpper(document.getElementById('eh-tindakan').value.trim());
+  r.catatan=document.getElementById('eh-catatan').value.trim();
+  sv('homecare',hcData);renderHomecare();
+}
+function hapusHC(el){
+  const id=el.dataset.id;
+  const r=hcData.find(x=>String(x.id)===String(id));if(!r)return;
+  const tr=el.closest('tr');
+  tr.innerHTML=`<td colspan="10" style="padding:10px;background:#FDECEC">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:13px">Hapus data home care <b>${r.nama}</b>?</span>
+      <button class="btn btn-d btn-sm" onclick="konfirmHapusHC('${id}')">Ya, Hapus</button>
+      <button class="btn btn-sm" onclick="renderHomecare()">Batal</button>
+    </div>
+  </td>`;
+}
+function konfirmHapusHC(id){hcData=hcData.filter(d=>String(d.id)!==String(id));sv('homecare',hcData);renderHomecare();}
+function dlHC(){
+  if(!hcData.length){alert('Belum ada data home care.');return;}
+  const rows=[['No','Tanggal','Nama Pasien','NIK','Tgl Lahir','Umur','Diagnosa','Tindakan','Catatan']];
+  hcData.forEach((r,i)=>rows.push([i+1,r.tgl,r.nama,r.nik,r.tglLahir||'-',r.umur||'-',r.sakit,r.tindakan,r.catatan||'-']));
+  xlsxOut(rows,'Home Care',namaFile('HOME_CARE'));
+}
+
+// ---- EXPORT / IMPORT ----
+let importParsed = null;
+function renderExportImport(){}
+function exportData(){
+  const payload={version:'1.0',exportedAt:new Date().toISOString(),exportedFrom:'Stok Obat Ners Asri Cantik',
+    data:{batches,keluar:keluarData,buang:buangData,homecare:hcData}};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const d=new Date();
+  const tgl=d.getFullYear()+''+String(d.getMonth()+1).padStart(2,'0')+''+String(d.getDate()).padStart(2,'0');
+  a.href=url;a.download='EXPORT_STOK_OBAT_NERS_ASRI_'+tgl+'.json';a.click();
+  URL.revokeObjectURL(url);
+  showAl('al-exportimport','✓ File export berhasil didownload!','s');
+}
+function previewImport(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const parsed=JSON.parse(ev.target.result);
+      if(!parsed.data) throw new Error('Format tidak valid');
+      importParsed=parsed;
+      const d=parsed.data;
+      document.getElementById('import-preview-detail').innerHTML=`
+        <div>💊 Stok Obat: <b>${(d.batches||[]).length} data</b></div>
+        <div>📤 Obat Keluar: <b>${(d.keluar||[]).length} data</b></div>
+        <div>🗑 Buang/Expired: <b>${(d.buang||[]).length} data</b></div>
+        <div>🏠 Home Care: <b>${(d.homecare||[]).length} data</b></div>`;
+      document.getElementById('import-preview').style.display='block';
+    }catch(err){showAl('al-exportimport','File tidak valid.','e');}
+  };
+  reader.readAsText(file);
+}
+function mergeData(local,cloud){
+  const map={};
+  cloud.forEach(item=>{if(item.id)map[String(item.id)]=item;});
+  local.forEach(item=>{if(item.id)map[String(item.id)]=item;});
+  return Object.values(map);
+}
+function importData(){
+  if(!importParsed)return;
+  try{
+    const d=importParsed.data;
+    batches=mergeData(batches,d.batches||[]);
+    keluarData=mergeData(keluarData,d.keluar||[]);
+    buangData=mergeData(buangData,d.buang||[]);
+    hcData=mergeData(hcData,d.homecare||[]);
+    sv('batches',batches);sv('keluar',keluarData);sv('buang',buangData);sv('homecare',hcData);
+    document.getElementById('import-preview').style.display='none';
+    document.getElementById('import-file').value='';
+    importParsed=null;
+    showAl('al-exportimport','✓ Import berhasil! Semua data sudah digabung.','s');
+  }catch(err){showAl('al-exportimport','Gagal import: '+err.message,'e');}
+}
+
+
+// ---- EXPORT / IMPORT ----
+let importParsed = null;
+function renderExportImport(){}
+function exportData(){
+  const payload={version:'1.0',exportedAt:new Date().toISOString(),exportedFrom:'Stok Obat Ners Asri Cantik',
+    data:{batches,keluar:keluarData,buang:buangData,homecare:hcData}};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=namaFile('EXPORT');a.click();
+  URL.revokeObjectURL(url);
+  showAl('al-exportimport','✓ File export berhasil didownload!','s');
+}
+function previewImport(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const parsed=JSON.parse(ev.target.result);
+      if(!parsed.data) throw new Error('Format tidak valid');
+      importParsed=parsed;
+      const d=parsed.data;
+      document.getElementById('import-preview-detail').innerHTML=
+        '<div>💊 Stok Obat: <b>'+(d.batches||[]).length+' data</b></div>'+
+        '<div>📤 Obat Keluar: <b>'+(d.keluar||[]).length+' data</b></div>'+
+        '<div>🗑 Buang: <b>'+(d.buang||[]).length+' data</b></div>'+
+        '<div>🏠 Home Care: <b>'+(d.homecare||[]).length+' data</b></div>';
+      document.getElementById('import-preview').style.display='block';
+    }catch(err){showAl('al-exportimport','File tidak valid.','e');}
+  };
+  reader.readAsText(file);
+}
+function mergeData(a,b){
+  const map={};
+  (b||[]).forEach(x=>{if(x.id)map[String(x.id)]=x;});
+  (a||[]).forEach(x=>{if(x.id)map[String(x.id)]=x;});
+  return Object.values(map);
+}
+async function importData(){
+  if(!importParsed)return;
+  try{
+    const d=importParsed.data;
+    batches=mergeData(batches,d.batches||[]);
+    keluarData=mergeData(keluarData,d.keluar||[]);
+    buangData=mergeData(buangData,d.buang||[]);
+    hcData=mergeData(hcData,d.homecare||[]);
+    await Promise.all([
+      sv('batches',batches),sv('keluar',keluarData),
+      sv('buang',buangData),sv('homecare',hcData)
+    ]);
+    document.getElementById('import-preview').style.display='none';
+    document.getElementById('import-file').value='';
+    importParsed=null;
+    showAl('al-exportimport','✓ Import berhasil! Data tersinkronkan ke cloud ☁️','s');
+  }catch(err){showAl('al-exportimport','Gagal import: '+err.message,'e');}
+}
+
+// ---- INIT ----
+function setupPWA(){
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
+}
+function init(){
+  setupPWA();
+  tampilLogin();
+}
+init();
+
+</script>
+</body>
+</html>
