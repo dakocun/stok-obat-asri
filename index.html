@@ -571,7 +571,7 @@ function go(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
-  const idx=['masuk','stok','keluar','rekap','buang','laporan','homecare','exportimport','shift'].indexOf(name);
+  const idx=['masuk','stok','keluar','rekap','buang','laporan','homecare','shift'].indexOf(name);
   document.querySelectorAll('.nav-btn')[idx].classList.add('active');
   curPage=name;
   if(name==='masuk') renderWarnHome();
