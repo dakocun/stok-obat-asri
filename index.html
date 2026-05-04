@@ -1447,15 +1447,24 @@ function renderShift(){
     const icon  = st ? st.label.split(' ')[0] : '';
 
     html += `<div onclick="bukaHariPopup(${d})"
-      style="border-radius:8px;padding:5px 3px;text-align:center;cursor:pointer;
+      style="border-radius:8px;padding:4px 2px;text-align:center;cursor:pointer;
              background:${bg};border:${isToday?'2px solid #C0426E':'1.5px solid rgba(0,0,0,0.06)'};
-             min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;
-             position:relative;transition:opacity .15s"
+             min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+             position:relative;transition:opacity .15s;overflow:hidden"
       onmouseover="this.style.opacity='.82'" onmouseout="this.style.opacity='1'">
+      <!-- Dot catatan pojok kiri atas -->
+      ${hasCatatan?`<div style="position:absolute;top:3px;left:4px;width:6px;height:6px;background:#C0426E;border-radius:50%"></div>`:''}
+      <!-- Kegiatan icons pojok kanan (atas ke bawah) -->
+      ${(()=>{
+        const keg=(shiftData[key]&&shiftData[key].kegiatan&&shiftData[key].kegiatan[d])||[];
+        const icons={'kantordesa':'🏛','posyandu':'👶','merujuk':'🚑'};
+        if(!keg.length) return '';
+        return `<div style="position:absolute;top:0;right:2px;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:3px 0">${keg.map(k=>`<span style="font-size:9px;line-height:1">${icons[k]||''}</span>`).join('')}</div>`;
+      })()}
+      <!-- Tengah: tanggal + shift -->
       <div style="font-size:13px;font-weight:700;color:${isToday?'#C0426E':color}">${d}</div>
-      ${icon?`<div style="font-size:13px;line-height:1">${icon}</div>`:''}
-      ${lbl?`<div style="font-size:9px;font-weight:600;color:${color};line-height:1.2;margin-top:1px">${lbl}</div>`:''}
-      ${hasCatatan?`<div style="position:absolute;top:3px;right:4px;width:6px;height:6px;background:#C0426E;border-radius:50%"></div>`:''}
+      ${icon?`<div style="font-size:12px;line-height:1">${icon}</div>`:''}
+      ${lbl?`<div style="font-size:8px;font-weight:600;color:${color};line-height:1.2;margin-top:1px">${lbl}</div>`:''}
     </div>`;
   }
 
