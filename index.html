@@ -165,23 +165,39 @@
 </head>
 <body>
 
-<div id="login-screen" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;background:linear-gradient(135deg,#C0426E,#D9608E,#E890BB,#F4B3D2);align-items:center;justify-content:center;padding:20px;box-sizing:border-box">
-  <div style="background:#fff;border-radius:22px;padding:32px 28px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(150,30,80,.35)">
-    <div style="width:72px;height:72px;background:linear-gradient(135deg,#C0426E,#E890BB);border-radius:20px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center">
-      <svg width="42" height="42" viewBox="0 0 56 56" fill="none">
-        <path d="M28 26S15 18 15 11.5C15 7.4 18.4 4 22.5 4c2.4 0 4.5 1.1 5.5 2.8C29 5.1 31.1 4 33.5 4 37.6 4 41 7.4 41 11.5 41 18 28 26 28 26z" fill="white" opacity=".95"/>
-        <rect x="8" y="32" width="40" height="16" rx="8" fill="white" opacity=".92"/>
-        <path d="M8 40c0-4.4 3.6-8 8-8h12v16H16c-4.4 0-8-3.6-8-8z" fill="white" opacity=".5"/>
-        <line x1="28" y1="32" x2="28" y2="48" stroke="rgba(200,80,130,.4)" stroke-width="2"/>
-      </svg>
+<style>
+#login-screen{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;background:linear-gradient(135deg,#C0426E,#D9608E,#E890BB,#F4B3D2);align-items:center;justify-content:center;padding:16px;box-sizing:border-box;overflow-y:auto}
+.login-box{background:#fff;border-radius:22px;padding:28px 26px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(150,30,80,.35)}
+@media(max-height:500px) and (orientation:landscape){
+  #login-screen{align-items:flex-start;padding:10px}
+  .login-box{display:flex;flex-direction:row;align-items:center;gap:24px;text-align:left;padding:18px 22px;max-width:640px}
+  .login-icon-col{flex-shrink:0;display:flex;flex-direction:column;align-items:center}
+  .login-form-col{flex:1}
+  .login-title{font-size:18px!important;margin-bottom:2px!important}
+  .login-sub{margin-bottom:12px!important}
+}
+</style>
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-icon-col">
+      <div style="width:66px;height:66px;background:linear-gradient(135deg,#C0426E,#E890BB);border-radius:18px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="40" height="40" viewBox="0 0 56 56" fill="none">
+          <path d="M28 26S15 18 15 11.5C15 7.4 18.4 4 22.5 4c2.4 0 4.5 1.1 5.5 2.8C29 5.1 31.1 4 33.5 4 37.6 4 41 7.4 41 11.5 41 18 28 26 28 26z" fill="white" opacity=".95"/>
+          <rect x="8" y="32" width="40" height="16" rx="8" fill="white" opacity=".92"/>
+          <path d="M8 40c0-4.4 3.6-8 8-8h12v16H16c-4.4 0-8-3.6-8-8z" fill="white" opacity=".5"/>
+          <line x1="28" y1="32" x2="28" y2="48" stroke="rgba(200,80,130,.4)" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="login-title" style="font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:#2D1A24;margin-bottom:3px">Stok Obat</div>
+      <div class="login-sub" style="font-size:12px;color:#C07090;font-style:italic;margin-bottom:20px;font-family:'DM Sans',sans-serif;white-space:nowrap">Ners Asri Cantik ♥</div>
     </div>
-    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#2D1A24">Stok Obat</div>
-    <div style="font-size:13px;color:#C07090;font-style:italic;margin:3px 0 22px;font-family:'DM Sans',sans-serif">Ners Asri Cantik ♥</div>
-    <input type="password" id="login-pass" placeholder="Masukkan password..."
-      style="width:100%;padding:13px;border:1.5px solid rgba(232,144,187,.4);border-radius:10px;font-size:15px;font-family:'DM Sans',sans-serif;color:#2D1A24;outline:none;text-align:center;letter-spacing:2px;box-sizing:border-box;margin-bottom:10px">
-    <div id="login-err" style="display:none;background:#FDECEC;color:#A32D2D;border-radius:8px;padding:8px;font-size:12px;margin-bottom:10px;font-family:'DM Sans',sans-serif">❌ Password salah. Coba lagi.</div>
-    <button id="login-btn" style="width:100%;padding:13px;background:linear-gradient(135deg,#C0426E,#E890BB);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Masuk →</button>
-    <div style="margin-top:14px;font-size:11px;color:#C0A0B0;font-family:'DM Sans',sans-serif">Sistem Informasi Manajemen Obat</div>
+    <div class="login-form-col" style="width:100%">
+      <input type="password" id="login-pass" placeholder="Masukkan password..."
+        style="width:100%;padding:12px;border:1.5px solid rgba(232,144,187,.4);border-radius:10px;font-size:15px;font-family:'DM Sans',sans-serif;color:#2D1A24;outline:none;text-align:center;letter-spacing:2px;box-sizing:border-box;margin-bottom:10px">
+      <div id="login-err" style="display:none;background:#FDECEC;color:#A32D2D;border-radius:8px;padding:8px;font-size:12px;margin-bottom:10px;font-family:'DM Sans',sans-serif">❌ Password salah. Coba lagi.</div>
+      <button id="login-btn" style="width:100%;padding:12px;background:linear-gradient(135deg,#C0426E,#E890BB);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Masuk →</button>
+      <div style="margin-top:12px;font-size:11px;color:#C0A0B0;font-family:'DM Sans',sans-serif;text-align:center">Sistem Informasi Manajemen Obat</div>
+    </div>
   </div>
 </div>
 
@@ -446,6 +462,8 @@
     </div>
     <div id="shift-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px"></div>
   </div>
+  <!-- Rekap Kegiatan Bulanan -->
+  <div class="card" id="shift-rekap-wrap" style="margin-top:0"></div>
 </div>
 
 <!-- POPUP MODIF SHIFT -->
@@ -470,10 +488,27 @@
 <div id="popup-catatan" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(45,26,36,0.5);align-items:center;justify-content:center;padding:20px">
   <div style="background:white;border-radius:18px;padding:24px;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(150,30,80,0.3)">
     <div id="popup-catatan-title" style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--tx);margin-bottom:4px"></div>
-    <div id="popup-catatan-shift" style="font-size:13px;margin-bottom:14px"></div>
+    <div id="popup-catatan-shift" style="font-size:13px;margin-bottom:12px"></div>
+    <div style="margin-bottom:12px">
+      <label style="font-size:12px;color:var(--tx3);font-weight:500;display:block;margin-bottom:7px">📌 Kegiatan</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button id="btn-kantordesa" onclick="toggleKegiatan('kantordesa')"
+          style="padding:6px 13px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;border:1.5px solid #C0426E;background:white;color:#C0426E;transition:all .15s">
+          🏛 Kantor Desa
+        </button>
+        <button id="btn-posyandu" onclick="toggleKegiatan('posyandu')"
+          style="padding:6px 13px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;border:1.5px solid #2E7D32;background:white;color:#2E7D32;transition:all .15s">
+          👶 Posyandu
+        </button>
+        <button id="btn-merujuk" onclick="toggleKegiatan('merujuk')"
+          style="padding:6px 13px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;border:1.5px solid #1565C0;background:white;color:#1565C0;transition:all .15s">
+          🚑 Merujuk
+        </button>
+      </div>
+    </div>
     <div class="fr">
       <label>📝 Catatan / Agenda</label>
-      <textarea id="catatan-input" rows="4" placeholder="Tulis catatan untuk hari ini..."
+      <textarea id="catatan-input" rows="3" placeholder="Tulis catatan untuk hari ini..."
         style="width:100%;padding:10px;border:1.5px solid var(--bd2);border-radius:10px;font-size:13px;font-family:'DM Sans',sans-serif;resize:none;outline:none;box-sizing:border-box"></textarea>
     </div>
     <div class="fe" style="gap:8px;margin-top:4px">
@@ -1425,6 +1460,7 @@ function renderShift(){
   }
 
   grid.innerHTML = html;
+  renderRekapKegiatan();
 }
 
 function shiftPrevMonth(){
@@ -1466,8 +1502,31 @@ function bukaHariPopup(tgl){
 
   const catData = (shiftData[key] && shiftData[key].catatan) || {};
   document.getElementById('catatan-input').value = catData[tgl] || '';
+  // Restore kegiatan toggles
+  const keg = (shiftData[key] && shiftData[key].kegiatan && shiftData[key].kegiatan[tgl]) || [];
+  ['kantordesa','posyandu','merujuk'].forEach(k=>{
+    const btn = document.getElementById('btn-'+k);
+    if(keg.includes(k)){
+      btn.style.background = btn.style.borderColor.includes('C0426E')||k==='kantordesa'?'#FDECF5':k==='posyandu'?'#E8F5E9':'#E3F0FF';
+      btn.style.opacity='1';
+      btn.dataset.active='1';
+    } else {
+      btn.style.background='white'; btn.style.opacity='.7'; btn.dataset.active='';
+    }
+  });
   document.getElementById('popup-catatan').style.display='flex';
   setTimeout(()=>document.getElementById('catatan-input').focus(), 200);
+}
+
+function toggleKegiatan(k){
+  const btn = document.getElementById('btn-'+k);
+  const isActive = btn.dataset.active==='1';
+  if(isActive){
+    btn.style.background='white'; btn.style.opacity='.7'; btn.dataset.active='';
+  } else {
+    const bgMap={kantordesa:'#FDECF5',posyandu:'#E8F5E9',merujuk:'#E3F0FF'};
+    btn.style.background=bgMap[k]; btn.style.opacity='1'; btn.dataset.active='1';
+  }
 }
 
 function tutupCatatanPopup(){
@@ -1478,14 +1537,21 @@ function tutupCatatanPopup(){
 async function simpanCatatan(){
   if(!catatanTgl) return;
   const key = shiftMonthKey(shiftYear, shiftMonth);
-  if(!shiftData[key]) shiftData[key]={catatan:{}};
+  if(!shiftData[key]) shiftData[key]={catatan:{},kegiatan:{}};
   if(!shiftData[key].catatan) shiftData[key].catatan={};
+  if(!shiftData[key].kegiatan) shiftData[key].kegiatan={};
+  // Save catatan
   const val = document.getElementById('catatan-input').value.trim();
   if(val) shiftData[key].catatan[catatanTgl] = val;
   else delete shiftData[key].catatan[catatanTgl];
+  // Save kegiatan
+  const keg = ['kantordesa','posyandu','merujuk'].filter(k=>document.getElementById('btn-'+k).dataset.active==='1');
+  if(keg.length) shiftData[key].kegiatan[catatanTgl] = keg;
+  else delete shiftData[key].kegiatan[catatanTgl];
   await saveShiftData();
   tutupCatatanPopup();
   renderShift();
+  renderRekapKegiatan();
 }
 
 // Close popups on backdrop click
@@ -1495,6 +1561,41 @@ document.getElementById('popup-modif').addEventListener('click', function(e){
 document.getElementById('popup-catatan').addEventListener('click', function(e){
   if(e.target===this) tutupCatatanPopup();
 });
+
+
+function renderRekapKegiatan(){
+  const wrap = document.getElementById('shift-rekap-wrap');
+  if(!wrap) return;
+  const key = shiftMonthKey(shiftYear, shiftMonth);
+  const kegData = (shiftData[key] && shiftData[key].kegiatan) || {};
+  const KEG_LIST = [
+    {id:'kantordesa', label:'🏛 Kantor Desa', color:'#C0426E', bg:'#FDECF5'},
+    {id:'posyandu',   label:'👶 Posyandu',   color:'#2E7D32', bg:'#E8F5E9'},
+    {id:'merujuk',    label:'🚑 Merujuk',    color:'#1565C0', bg:'#E3F0FF'},
+  ];
+  // Check if any kegiatan exists
+  const hasAny = Object.values(kegData).some(v=>v&&v.length>0);
+  if(!hasAny){ wrap.innerHTML=''; return; }
+
+  let html = '<div class="ctitle" style="margin-bottom:10px">📊 Rekap Kegiatan Bulan Ini</div>';
+  KEG_LIST.forEach(({id,label,color,bg})=>{
+    const tgls = Object.entries(kegData)
+      .filter(([t,v])=>v&&v.includes(id))
+      .map(([t])=>Number(t))
+      .sort((a,b)=>a-b);
+    if(!tgls.length) return;
+    html += `<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;padding:10px 12px;background:${bg};border-radius:10px">
+      <div style="flex-shrink:0">
+        <div style="font-size:13px;font-weight:700;color:${color}">${label}</div>
+        <div style="font-size:12px;color:${color};opacity:.8;margin-top:1px">${tgls.length}x dalam bulan ini</div>
+      </div>
+      <div style="flex:1;display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end">
+        ${tgls.map(t=>`<span style="background:${color};color:white;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600">${t}</span>`).join('')}
+      </div>
+    </div>`;
+  });
+  wrap.innerHTML = html;
+}
 
 // ===== BOOT =====
 window.addEventListener('load', function() {
