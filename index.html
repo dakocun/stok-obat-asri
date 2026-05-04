@@ -220,6 +220,7 @@
     <button class="nav-btn" onclick="go('laporan')">📊 Laporan Bulanan</button>
     <button class="nav-btn" onclick="go('homecare')">🏠 Home Care</button>
     <!-- Export/Import hidden -->
+    <button class="nav-btn" onclick="go('shift')">🗓 Jadwal Shift</button>
   </nav>
 </div>
 
@@ -406,6 +407,82 @@
   </div>
 </div>
 
+
+<!-- JADWAL SHIFT -->
+<div class="page" id="page-shift">
+  <div id="al-shift" class="alert"></div>
+
+  <!-- Header Kalender -->
+  <div class="card" style="margin-bottom:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onclick="shiftPrevMonth()" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--bd2);background:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">‹</button>
+        <div id="shift-month-label" style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--tx);min-width:160px;text-align:center"></div>
+        <button onclick="shiftNextMonth()" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--bd2);background:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">›</button>
+      </div>
+      <button onclick="bukaModifShift()" class="btn btn-p btn-sm">⚙ Modif Shift Tgl 1</button>
+    </div>
+
+    <!-- Legend -->
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px">
+      <span style="background:#FFF3CD;color:#856404;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:500">☀️ Siang</span>
+      <span style="background:#FFE4F0;color:#9B2D6F;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:500">🌅 Pagi</span>
+      <span style="background:#E8E0FF;color:#5B3DB5;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:500">🌙 Malam</span>
+      <span style="background:#FFE8D6;color:#8B4513;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:500">😴 Libur 1</span>
+      <span style="background:#E8F5E9;color:#2E7D32;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:500">🌿 Libur 2</span>
+    </div>
+  </div>
+
+  <!-- Kalender -->
+  <div class="card" style="padding:12px">
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:6px">
+      <div style="text-align:center;font-size:11px;font-weight:600;color:var(--tx3);padding:4px">Min</div>
+      <div style="text-align:center;font-size:11px;font-weight:600;color:var(--tx3);padding:4px">Sen</div>
+      <div style="text-align:center;font-size:11px;font-weight:600;color:var(--tx3);padding:4px">Sel</div>
+      <div style="text-align:center;font-size:11px;font-weight:600;color:var(--tx3);padding:4px">Rab</div>
+      <div style="text-align:center;font-size:11px;font-weight:600;color:var(--tx3);padding:4px">Kam</div>
+      <div style="text-align:center;font-size:11px;font-weight:600;color:var(--tx3);padding:4px">Jum</div>
+      <div style="text-align:center;font-size:11px;font-weight:600;color:var(--tx3);padding:4px">Sab</div>
+    </div>
+    <div id="shift-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px"></div>
+  </div>
+</div>
+
+<!-- POPUP MODIF SHIFT -->
+<div id="popup-modif" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(45,26,36,0.5);align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:18px;padding:24px;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(150,30,80,0.3)">
+    <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--tx);margin-bottom:6px">⚙ Modif Shift Tgl 1</div>
+    <div style="font-size:12px;color:var(--tx3);margin-bottom:16px">Pilih shift untuk tanggal 1 bulan ini, kalender akan otomatis dihitung mengikuti pola shift.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+      <button onclick="setShiftTgl1('Siang')" class="shift-opt-btn" style="background:#FFF3CD;color:#856404;border:2px solid transparent;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">☀️ Siang</button>
+      <button onclick="setShiftTgl1('Pagi')" class="shift-opt-btn" style="background:#FFE4F0;color:#9B2D6F;border:2px solid transparent;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">🌅 Pagi</button>
+      <button onclick="setShiftTgl1('Malam')" class="shift-opt-btn" style="background:#E8E0FF;color:#5B3DB5;border:2px solid transparent;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">🌙 Malam</button>
+      <button onclick="setShiftTgl1('Libur1')" class="shift-opt-btn" style="background:#FFE8D6;color:#8B4513;border:2px solid transparent;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">😴 Libur 1</button>
+      <button onclick="setShiftTgl1('Libur2')" class="shift-opt-btn" style="background:#E8F5E9;color:#2E7D32;border:2px solid transparent;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">🌿 Libur 2</button>
+    </div>
+    <div class="fe" style="gap:8px">
+      <button class="btn btn-sm" onclick="document.getElementById('popup-modif').style.display='none'">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP CATATAN HARIAN -->
+<div id="popup-catatan" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(45,26,36,0.5);align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:18px;padding:24px;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(150,30,80,0.3)">
+    <div id="popup-catatan-title" style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--tx);margin-bottom:4px"></div>
+    <div id="popup-catatan-shift" style="font-size:13px;margin-bottom:14px"></div>
+    <div class="fr">
+      <label>📝 Catatan / Agenda</label>
+      <textarea id="catatan-input" rows="4" placeholder="Tulis catatan untuk hari ini..."
+        style="width:100%;padding:10px;border:1.5px solid var(--bd2);border-radius:10px;font-size:13px;font-family:'DM Sans',sans-serif;resize:none;outline:none;box-sizing:border-box"></textarea>
+    </div>
+    <div class="fe" style="gap:8px;margin-top:4px">
+      <button class="btn btn-sm" onclick="tutupCatatanPopup()">Batal</button>
+      <button class="btn btn-p btn-sm" onclick="simpanCatatan()">✓ Simpan</button>
+    </div>
+  </div>
+</div>
+
 </div>
 
 <script>
@@ -479,6 +556,7 @@ async function cekLogin(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('loading-screen').style.display='flex';
   [batches,keluarData,buangData,hcData] = await Promise.all([ld('batches'),ld('keluar'),ld('buang'),ld('homecare')]);
+  await loadShiftData();
   migrasi();
   document.getElementById('loading-screen').style.display='none';
   const d=new Date(), days=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
@@ -493,7 +571,7 @@ function go(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
-  const idx=['masuk','stok','keluar','rekap','buang','laporan','homecare','exportimport'].indexOf(name);
+  const idx=['masuk','stok','keluar','rekap','buang','laporan','homecare','exportimport','shift'].indexOf(name);
   document.querySelectorAll('.nav-btn')[idx].classList.add('active');
   curPage=name;
   if(name==='masuk') renderWarnHome();
@@ -504,6 +582,7 @@ function go(name){
   if(name==='laporan'){initLap();renderLap();}
   if(name==='homecare') renderHomecare();
   if(name==='exportimport') renderExportImport();
+  if(name==='shift') renderShift();
 }
 
 // ---- HELPERS ----
@@ -1258,6 +1337,164 @@ async function importData(){
   document.getElementById('import-preview').style.display='none'; document.getElementById('import-file').value=''; importParsed=null;
   showAl('al-exportimport','✓ Import berhasil! Data tersinkronkan ke cloud ☁️','s');
 }
+
+
+// ===================== JADWAL SHIFT =====================
+const SHIFT_CYCLE = ['Siang','Pagi','Malam','Libur1','Libur2'];
+const SHIFT_STYLE = {
+  'Siang':  {bg:'#FFF3CD', color:'#856404', label:'☀️ Siang'},
+  'Pagi':   {bg:'#FFE4F0', color:'#9B2D6F', label:'🌅 Pagi'},
+  'Malam':  {bg:'#E8E0FF', color:'#5B3DB5', label:'🌙 Malam'},
+  'Libur1': {bg:'#FFE8D6', color:'#8B4513', label:'😴 Libur 1'},
+  'Libur2': {bg:'#E8F5E9', color:'#2E7D32', label:'🌿 Libur 2'},
+};
+
+let shiftYear  = new Date().getFullYear();
+let shiftMonth = new Date().getMonth(); // 0-based
+let shiftData  = {}; // { 'YYYY-MM': { tgl1Shift: 'Siang', catatan: {'1':'...','2':'...'} } }
+let catatanTgl = null;
+
+async function loadShiftData(){
+  const raw = await ld('shiftdata');
+  shiftData = (Array.isArray(raw) ? {} : raw) || {};
+}
+async function saveShiftData(){
+  // shiftData is object not array, so wrap for sv compatibility
+  await db.collection('stok-obat-asri').doc('shared__shiftdata').set({
+    d: JSON.stringify(shiftData), t: Date.now()
+  });
+}
+
+function shiftMonthKey(y, m){
+  return y+'-'+String(m+1).padStart(2,'0');
+}
+
+function getShiftForDay(y, m, tgl){
+  const key = shiftMonthKey(y, m);
+  const data = shiftData[key];
+  if(!data || !data.tgl1Shift) return null;
+  const startIdx = SHIFT_CYCLE.indexOf(data.tgl1Shift);
+  if(startIdx < 0) return null;
+  const dayOffset = tgl - 1;
+  return SHIFT_CYCLE[(startIdx + dayOffset) % SHIFT_CYCLE.length];
+}
+
+function renderShift(){
+  const key = shiftMonthKey(shiftYear, shiftMonth);
+  const label = BULAN[shiftMonth] + ' ' + shiftYear;
+  document.getElementById('shift-month-label').textContent = label;
+
+  const grid = document.getElementById('shift-cal-grid');
+  const firstDay = new Date(shiftYear, shiftMonth, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(shiftYear, shiftMonth+1, 0).getDate();
+  const today = new Date();
+  const todayStr = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+
+  let html = '';
+
+  // Empty cells before first day
+  for(let i=0; i<firstDay; i++){
+    html += '<div></div>';
+  }
+
+  const catData = (shiftData[key] && shiftData[key].catatan) || {};
+
+  for(let d=1; d<=daysInMonth; d++){
+    const shift = getShiftForDay(shiftYear, shiftMonth, d);
+    const st = shift ? SHIFT_STYLE[shift] : null;
+    const dateStr = shiftYear+'-'+String(shiftMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const isToday = dateStr === todayStr;
+    const hasCatatan = catData[d] && catData[d].trim() !== '';
+
+    const bg    = st ? st.bg    : '#F9F9F9';
+    const color = st ? st.color : '#999';
+    const lbl   = st ? st.label.split(' ').slice(1).join(' ') : '';
+    const icon  = st ? st.label.split(' ')[0] : '';
+
+    html += `<div onclick="bukaHariPopup(${d})"
+      style="border-radius:8px;padding:5px 3px;text-align:center;cursor:pointer;
+             background:${bg};border:${isToday?'2px solid #C0426E':'1.5px solid rgba(0,0,0,0.06)'};
+             min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+             position:relative;transition:opacity .15s"
+      onmouseover="this.style.opacity='.82'" onmouseout="this.style.opacity='1'">
+      <div style="font-size:13px;font-weight:700;color:${isToday?'#C0426E':color}">${d}</div>
+      ${icon?`<div style="font-size:13px;line-height:1">${icon}</div>`:''}
+      ${lbl?`<div style="font-size:9px;font-weight:600;color:${color};line-height:1.2;margin-top:1px">${lbl}</div>`:''}
+      ${hasCatatan?`<div style="position:absolute;top:3px;right:4px;width:6px;height:6px;background:#C0426E;border-radius:50%"></div>`:''}
+    </div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+function shiftPrevMonth(){
+  shiftMonth--;
+  if(shiftMonth < 0){ shiftMonth=11; shiftYear--; }
+  renderShift();
+}
+function shiftNextMonth(){
+  shiftMonth++;
+  if(shiftMonth > 11){ shiftMonth=0; shiftYear++; }
+  renderShift();
+}
+
+function bukaModifShift(){
+  document.getElementById('popup-modif').style.display='flex';
+}
+
+async function setShiftTgl1(shift){
+  const key = shiftMonthKey(shiftYear, shiftMonth);
+  if(!shiftData[key]) shiftData[key]={catatan:{}};
+  shiftData[key].tgl1Shift = shift;
+  await saveShiftData();
+  document.getElementById('popup-modif').style.display='none';
+  renderShift();
+  showAl('al-shift','✓ Shift tgl 1 diset ke '+SHIFT_STYLE[shift].label,'s');
+}
+
+function bukaHariPopup(tgl){
+  const key = shiftMonthKey(shiftYear, shiftMonth);
+  const shift = getShiftForDay(shiftYear, shiftMonth, tgl);
+  const st = shift ? SHIFT_STYLE[shift] : null;
+  catatanTgl = tgl;
+
+  document.getElementById('popup-catatan-title').textContent =
+    tgl+' '+BULAN[shiftMonth]+' '+shiftYear;
+  document.getElementById('popup-catatan-shift').innerHTML = st
+    ? `<span style="background:${st.bg};color:${st.color};border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600">${st.label}</span>`
+    : '<span style="color:#999;font-size:12px">Shift belum diset</span>';
+
+  const catData = (shiftData[key] && shiftData[key].catatan) || {};
+  document.getElementById('catatan-input').value = catData[tgl] || '';
+  document.getElementById('popup-catatan').style.display='flex';
+  setTimeout(()=>document.getElementById('catatan-input').focus(), 200);
+}
+
+function tutupCatatanPopup(){
+  document.getElementById('popup-catatan').style.display='none';
+  catatanTgl = null;
+}
+
+async function simpanCatatan(){
+  if(!catatanTgl) return;
+  const key = shiftMonthKey(shiftYear, shiftMonth);
+  if(!shiftData[key]) shiftData[key]={catatan:{}};
+  if(!shiftData[key].catatan) shiftData[key].catatan={};
+  const val = document.getElementById('catatan-input').value.trim();
+  if(val) shiftData[key].catatan[catatanTgl] = val;
+  else delete shiftData[key].catatan[catatanTgl];
+  await saveShiftData();
+  tutupCatatanPopup();
+  renderShift();
+}
+
+// Close popups on backdrop click
+document.getElementById('popup-modif').addEventListener('click', function(e){
+  if(e.target===this) this.style.display='none';
+});
+document.getElementById('popup-catatan').addEventListener('click', function(e){
+  if(e.target===this) tutupCatatanPopup();
+});
 
 // ===== BOOT =====
 window.addEventListener('load', function() {
