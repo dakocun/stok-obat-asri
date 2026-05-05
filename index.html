@@ -823,8 +823,14 @@ function renderKeluarForm(){
 }
 function togKel(ek,k){
   const chk=document.getElementById(`chk${ek}`),qty=document.getElementById(`qty${ek}`);
-  if(chk.checked){qty.style.display='block';selKeluar[k]=1;qty.oninput=()=>selKeluar[k]=parseInt(qty.value)||0;}
-  else{qty.style.display='none';delete selKeluar[k];}
+  if(chk.checked){
+    qty.style.display='block';
+    selKeluar[k]={namaObat:k, qty:parseInt(qty.value)||1};
+    qty.oninput=()=>{ if(selKeluar[k]) selKeluar[k].qty=parseInt(qty.value)||1; };
+  } else {
+    qty.style.display='none';
+    delete selKeluar[k];
+  }
 }
 async function simpanKeluar(){
   const tgl=document.getElementById('tglkel').value;
@@ -835,20 +841,27 @@ async function simpanKeluar(){
   const tgllahirkel=document.getElementById('tgllahirpas').value;
   const umurkel=document.getElementById('umurpas').value;
   if(!nik||!nama||!sakit){showAl('al-keluar','Isi semua: NIK, nama, dan jenis sakit.','e');return;}
-  const olist=Object.values(selKeluar).filter(x=>x.qty>0);
+  const olist=Object.values(selKeluar).filter(x=>x&&x.qty>0);
   if(!olist.length){showAl('al-keluar','Pilih minimal 1 obat.','e');return;}
-  // Validate each batch
+  // Validate stok cukup
   for(const x of olist){
-    const b=batches.find(bt=>String(bt.id)===String(x.batchId));
-    if(!b||b.sisaStok<x.qty){showAl('al-keluar',`Stok batch "${x.namaObat}" tidak cukup (sisa: ${b?b.sisaStok:0}).`,'e');return;}
+    if(stokByName(x.namaObat)<x.qty){
+      showAl('al-keluar','Stok "'+x.namaObat+'" tidak cukup (sisa: '+stokByName(x.namaObat)+').','e');
+      return;
+    }
   }
-  // Deduct directly from selected batch
+  // FIFO: kurangi dari batch terlama dulu
   const detail=[];
   for(const x of olist){
-    const b=batches.find(bt=>String(bt.id)===String(x.batchId));
-    if(!b)continue;
-    b.sisaStok-=x.qty;
-    detail.push({batchId:b.id,namaObat:x.namaObat,qty:x.qty,tglExpired:b.tglExpired});
+    let sisa=x.qty;
+    const bs=batches.filter(b=>b.namaObat===x.namaObat&&b.sisaStok>0)
+      .sort((a,b)=>new Date(a.tglMasuk)-new Date(b.tglMasuk));
+    for(const b of bs){
+      if(sisa<=0)break;
+      const ambil=Math.min(sisa,b.sisaStok);
+      b.sisaStok-=ambil; sisa-=ambil;
+      detail.push({batchId:b.id,namaObat:x.namaObat,qty:ambil,tglExpired:b.tglExpired});
+    }
   }
   await sv('batches',batches);
   keluarData.unshift({id:genId(),tgl,nik,nama,tglLahir:tgllahirkel,umur:umurkel,sakit,catatan:catkel,obat:detail});
@@ -1123,7 +1136,6 @@ function setupPWA(){
     display:'standalone',
     background_color:'#FFF6FA',
     theme_color:'#C0426E',
-    orientation:'portrait-primary',
     icons:[
       {src:icon192,sizes:'192x192',type:'image/png',purpose:'any maskable'},
       {src:icon512,sizes:'512x512',type:'image/png',purpose:'any maskable'}
