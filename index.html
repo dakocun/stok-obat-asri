@@ -534,7 +534,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-async function sv(name, val){
+async function await sv(name, val){
   try{ await db.collection('stok-obat-asri').doc('shared__'+name).set({d:JSON.stringify(val),t:Date.now()}); }
   catch(e){ console.error('sv:',e.message); }
 }
@@ -641,7 +641,7 @@ function renderWarnHome(){
 
 // ---- KAMERA ----
 // (camera removed — input manual only)
-function tambahManual(){
+async function tambahManual(){
   const nm=toUpper(document.getElementById('mnam').value.trim());
   const jml=parseInt(document.getElementById('mjml').value)||0;
   const tm=document.getElementById('mtgl').value;
@@ -649,7 +649,7 @@ function tambahManual(){
   if(!nm){showAl('al-masuk','Nama obat wajib diisi.','e');return;}
   if(jml<=0){showAl('al-masuk','Jumlah harus lebih dari 0.','e');return;}
   batches.push({id:genId(),namaObat:nm,jumlah:jml,sisaStok:jml,tglMasuk:tm||today(),tglExpired:te||''});
-  sv('batches',batches);
+  await sv('batches',batches);
   document.getElementById('mnam').value='';document.getElementById('mjml').value='';document.getElementById('mexp').value='';
   document.getElementById('mnam').focus();
   showAl('al-masuk',`✓ ${nm} (${jml}) berhasil ditambahkan ke stok!`,'s');
@@ -752,7 +752,7 @@ function editBatch(el){
     </div>
   </td>`;
 }
-function simpanEdit(id){
+async function simpanEdit(id){
   const b=batches.find(x=>String(x.id)===String(id));if(!b)return;
   const nama=document.getElementById('eb-nama').value.trim();
   const awal=parseInt(document.getElementById('eb-awal').value);
@@ -766,7 +766,7 @@ function simpanEdit(id){
   b.sisaStok=sisa;
   b.tglMasuk=masuk;
   b.tglExpired=exp;
-  sv('batches',batches);renderStok();renderWarnHome();renderMasukHariIni();
+  await sv('batches',batches);renderStok();renderWarnHome();renderMasukHariIni();
 }
 function hapusBatch(el){
   const id=el.dataset.id;
@@ -781,9 +781,9 @@ function hapusBatch(el){
     </div>
   </td>`;
 }
-function konfirmHapus(id){
+async function konfirmHapus(id){
   batches=batches.filter(x=>String(x.id)!==String(id));
-  sv('batches',batches);renderStok();renderWarnHome();renderMasukHariIni();
+  await sv('batches',batches);renderStok();renderWarnHome();renderMasukHariIni();
 }
 
 // ---- OBAT KELUAR ----
@@ -826,7 +826,7 @@ function togKel(ek,k){
   if(chk.checked){qty.style.display='block';selKeluar[k]=1;qty.oninput=()=>selKeluar[k]=parseInt(qty.value)||0;}
   else{qty.style.display='none';delete selKeluar[k];}
 }
-function simpanKeluar(){
+async function simpanKeluar(){
   const tgl=document.getElementById('tglkel').value;
   const nik=document.getElementById('nikpas').value.trim();
   const nama=toUpper(document.getElementById('nampas').value.trim());
@@ -850,9 +850,9 @@ function simpanKeluar(){
     b.sisaStok-=x.qty;
     detail.push({batchId:b.id,namaObat:x.namaObat,qty:x.qty,tglExpired:b.tglExpired});
   }
-  sv('batches',batches);
+  await sv('batches',batches);
   keluarData.unshift({id:genId(),tgl,nik,nama,tglLahir:tgllahirkel,umur:umurkel,sakit,catatan:catkel,obat:detail});
-  sv('keluar',keluarData);
+  await sv('keluar',keluarData);
   showAl('al-keluar',`✓ Pengeluaran obat untuk ${nama} berhasil disimpan!`,'s');
   document.getElementById('nikpas').value='';document.getElementById('nampas').value='';document.getElementById('sakpas').value='';document.getElementById('catkel').value='';document.getElementById('tgllahirpas').value='';document.getElementById('umurpas').value='';
   selKeluar={};renderKeluarForm();
@@ -881,7 +881,7 @@ function hapusRekap(el){
     </div>
   </td>`;
 }
-function konfirmHapusRekap(id){keluarData=keluarData.filter(r=>String(r.id)!==String(id));sv('keluar',keluarData);renderRekap();}
+async function konfirmHapusRekap(id){keluarData=keluarData.filter(r=>String(r.id)!==String(id));await sv('keluar',keluarData);renderRekap();}
 function editRekap(el){
   const id=el.dataset.id;
   const r=keluarData.find(x=>String(x.id)===String(id));if(!r)return;
@@ -909,7 +909,7 @@ function editRekap(el){
     </div>
   </td>`;
 }
-function simpanEditRekap(id){
+async function simpanEditRekap(id){
   const r=keluarData.find(x=>String(x.id)===String(id));if(!r)return;
   r.tgl=document.getElementById('er-tgl').value;
   r.nik=document.getElementById('er-nik').value.trim();
@@ -925,7 +925,7 @@ function simpanEditRekap(id){
     const ob=r.obat.find(o=>o.namaObat===nm);
     if(ob&&qtyEl) ob.qty=parseInt(qtyEl.value)||ob.qty;
   });
-  sv('keluar',keluarData);renderRekap();
+  await sv('keluar',keluarData);renderRekap();
 }
 
 // ---- BUANG ----
@@ -938,7 +938,7 @@ function renderBuangSel(){
     sel.innerHTML+=`<option value="${b.id}">${b.namaObat}${info} — sisa ${b.sisaStok}</option>`;
   });
 }
-function simpanBuang(){
+async function simpanBuang(){
   const bid=parseInt(document.getElementById('buangsel').value);
   const jml=parseInt(document.getElementById('buangjml').value)||0;
   const als=document.getElementById('buangals').value;
@@ -946,9 +946,9 @@ function simpanBuang(){
   if(!bid){showAl('al-buang','Pilih batch obat terlebih dahulu.','e');return;}
   const b=batches.find(x=>x.id===bid);if(!b)return;
   if(jml<=0||jml>b.sisaStok){showAl('al-buang',`Jumlah tidak valid. Sisa stok batch ini: ${b.sisaStok}.`,'e');return;}
-  b.sisaStok-=jml;sv('batches',batches);
+  b.sisaStok-=jml;await sv('batches',batches);
   buangData.unshift({id:genId(),tgl:today(),batchId:bid,namaObat:b.namaObat,jumlah:jml,alasan:als,catatan:cat});
-  sv('buang',buangData);
+  await sv('buang',buangData);
   showAl('al-buang',`✓ ${jml} ${b.namaObat} dicatat sebagai dibuang (${ALS[als]}).`,'s');
   document.getElementById('buangjml').value='';document.getElementById('buangcat').value='';
   renderBuangSel();renderBuangRiwayat();
@@ -973,7 +973,7 @@ function hapusBuang(el){
     </div>
   </td>`;
 }
-function konfirmHapusBuang(id){buangData=buangData.filter(d=>String(d.id)!==String(id));sv('buang',buangData);renderBuangRiwayat();}
+async function konfirmHapusBuang(id){buangData=buangData.filter(d=>String(d.id)!==String(id));await sv('buang',buangData);renderBuangRiwayat();}
 
 // ---- LAPORAN ----
 function initLap(){
@@ -1216,7 +1216,7 @@ function renderHomecare(filter=''){
   });
   wrap.innerHTML=h+'</tbody></table></div>';
 }
-function simpanHC(){
+async function simpanHC(){
   const tgl=document.getElementById('hc-tgl').value;
   const nik=document.getElementById('hc-nik').value.trim();
   const nama=toUpper(document.getElementById('hc-nama').value.trim());
@@ -1227,7 +1227,7 @@ function simpanHC(){
   const catatan=document.getElementById('hc-catatan').value.trim();
   if(!nik||!nama||!sakit||!tindakan){showAl('al-homecare','Isi NIK, nama, diagnosa, dan tindakan.','e');return;}
   hcData.unshift({id:genId(),tgl,nik,nama,tglLahir,umur,sakit,tindakan,catatan});
-  sv('homecare',hcData);
+  await sv('homecare',hcData);
   showAl('al-homecare','✓ Kunjungan home care untuk '+nama+' berhasil disimpan!','s');
   ['hc-nik','hc-nama','hc-tgllahir','hc-umur','hc-sakit','hc-tindakan','hc-catatan'].forEach(id=>{document.getElementById(id).value='';});
   renderHCTags();
@@ -1254,7 +1254,7 @@ function editHC(el){
     </div>
   </td>`;
 }
-function simpanEditHC(id){
+async function simpanEditHC(id){
   const r=hcData.find(x=>String(x.id)===String(id));if(!r)return;
   r.tgl=document.getElementById('eh-tgl').value;
   r.nik=document.getElementById('eh-nik').value.trim();
@@ -1264,7 +1264,7 @@ function simpanEditHC(id){
   r.sakit=toUpper(document.getElementById('eh-sakit').value.trim());
   r.tindakan=toUpper(document.getElementById('eh-tindakan').value.trim());
   r.catatan=document.getElementById('eh-catatan').value.trim();
-  sv('homecare',hcData);renderHomecare();
+  await sv('homecare',hcData);renderHomecare();
 }
 function hapusHC(el){
   const id=el.dataset.id;
@@ -1278,7 +1278,7 @@ function hapusHC(el){
     </div>
   </td>`;
 }
-function konfirmHapusHC(id){hcData=hcData.filter(d=>String(d.id)!==String(id));sv('homecare',hcData);renderHomecare();}
+async function konfirmHapusHC(id){hcData=hcData.filter(d=>String(d.id)!==String(id));await sv('homecare',hcData);renderHomecare();}
 function dlHC(){
   if(!hcData.length){alert('Belum ada data home care.');return;}
   const rows=[['No','Tanggal','Nama Pasien','NIK','Tgl Lahir','Umur','Diagnosa','Tindakan','Catatan']];
@@ -1333,7 +1333,7 @@ function importData(){
     keluarData=mergeData(keluarData,d.keluar||[]);
     buangData=mergeData(buangData,d.buang||[]);
     hcData=mergeData(hcData,d.homecare||[]);
-    sv('batches',batches);sv('keluar',keluarData);sv('buang',buangData);sv('homecare',hcData);
+    await sv('batches',batches);await sv('keluar',keluarData);await sv('buang',buangData);await sv('homecare',hcData);
     document.getElementById('import-preview').style.display='none';
     document.getElementById('import-file').value='';
     importParsed=null;
@@ -1368,7 +1368,7 @@ async function importData(){
   if(!importParsed)return;
   const d=importParsed.data;
   batches=mergeData(batches,d.batches||[]); keluarData=mergeData(keluarData,d.keluar||[]); buangData=mergeData(buangData,d.buang||[]); hcData=mergeData(hcData,d.homecare||[]);
-  await Promise.all([sv('batches',batches),sv('keluar',keluarData),sv('buang',buangData),sv('homecare',hcData)]);
+  await Promise.all([await sv('batches',batches),await sv('keluar',keluarData),await sv('buang',buangData),await sv('homecare',hcData)]);
   document.getElementById('import-preview').style.display='none'; document.getElementById('import-file').value=''; importParsed=null;
   showAl('al-exportimport','✓ Import berhasil! Data tersinkronkan ke cloud ☁️','s');
 }
