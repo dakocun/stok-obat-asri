@@ -534,7 +534,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-async function await sv(name, val){
+async function sv(name, val){
   try{ await db.collection('stok-obat-asri').doc('shared__'+name).set({d:JSON.stringify(val),t:Date.now()}); }
   catch(e){ console.error('sv:',e.message); }
 }
