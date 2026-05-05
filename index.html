@@ -1337,7 +1337,7 @@ function mergeData(local,cloud){
   local.forEach(item=>{if(item.id)map[String(item.id)]=item;});
   return Object.values(map);
 }
-function importData(){
+async function importData(){
   if(!importParsed)return;
   try{
     const d=importParsed.data;
